@@ -7,10 +7,10 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-/**
- * Implementación de AuthRepository utilizando los servicios de Firebase.
- * Gestiona tanto la autenticación (Auth) como el almacenamiento de perfiles (Firestore).
- */
+
+//Implementa AuthRepository utilizando Firebase.
+//Gestiona la autenticación (Auth) y almacenamiento de perfiles (Firestore).
+
 class FirebaseAuthRepository(
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -25,9 +25,8 @@ class FirebaseAuthRepository(
         }
     }
 
-    /**
-     * Crea un usuario en Auth y, si tiene éxito, registra su perfil en la colección 'users' de Firestore.
-     */
+    //Crea un usuario en Auth y si tiene éxito registra su perfil.
+
     override suspend fun register(email: String, password: String, username: String): Result<FirebaseUser?> {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
@@ -39,7 +38,7 @@ class FirebaseAuthRepository(
                     email = email,
                     username = username
                 )
-                // Usamos el UID de Auth como ID del documento en Firestore para facilitar búsquedas.
+                //Usa el UID de Auth como ID del documento en Firestore para facilitar búsquedas.
                 firestore.collection("users").document(firebaseUser.uid).set(user).await()
             }
             
@@ -49,10 +48,12 @@ class FirebaseAuthRepository(
         }
     }
 
+    //Obtiene el perfil del usuario actual.
     override fun getCurrentUser(): FirebaseUser? {
         return firebaseAuth.currentUser
     }
 
+    //Cierra la sesión del usuario. (Sin implementar)
     override fun logout() {
         firebaseAuth.signOut()
     }

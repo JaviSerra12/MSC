@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+//Implementa PurchasesRepository utilizando Firestore.
 class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepository {
 
     override suspend fun addPurchase(purchase: Purchases) {
