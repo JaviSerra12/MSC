@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+
+# Local config
+local.properties
+
+# Logs
+*.log
+
+# Android Studio
+captures/
+.externalNativeBuild/
+.cxx/
+*.iml
+.idea/
+*.hprof
+
+# APK / AAB
+*.apk
+*.aab
+output-metadata.json
+
+# Keystore (MUY IMPORTANTE)
+*.jks
+*.keystore
+
+# Google / Firebase (IMPORTANTE)
+google-services.json
+
+# Secretos (añadido importante)
+secrets.properties
+
+# OS files
+.DS_Store
