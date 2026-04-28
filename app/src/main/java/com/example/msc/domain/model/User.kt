@@ -1,8 +1,7 @@
 package com.example.msc.domain.model
 
-/**
- * Modelo que representa la información de perfil de un usuario en el sistema.
- */
+
+//Datos que contienen los usuarios.
 data class User(
     val uid: String = "",
     val email: String = "",

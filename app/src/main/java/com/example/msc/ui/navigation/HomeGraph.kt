@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.msc.ui.screen.homeScreen.HomeScreen
 
+//Rutas principales de la aplicación.
 fun NavGraphBuilder.homeGraph(navController: NavHostController){
     composable(RouteGeneral.HomeScreen.route){
         HomeScreen(navController = navController)

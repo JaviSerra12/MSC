@@ -33,11 +33,15 @@ import com.example.msc.ui.theme.BlueMSC
 @Composable
 fun LoginScreen(loginClick: () -> Unit, onRegisterClick: () -> Unit) {
 
+    //Autentificacion de usuario.
     val authRepository = FirebaseAuthRepository()
+
+    //Logica de la pantalla.
     val viewModel: LoginScreenVM = viewModel(
         factory = LoginScreenVMFactory(authRepository)
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     Column(
         modifier = Modifier

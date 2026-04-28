@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.msc.domain.repository.AuthRepository
 
+//Sirve para crear el ViewModel con parametros (No se puede crear en la vista) y por eso se usa Factory
 class RegisterScreenVMFactory(
     private val authRepository: AuthRepository
 ) : ViewModelProvider.Factory {

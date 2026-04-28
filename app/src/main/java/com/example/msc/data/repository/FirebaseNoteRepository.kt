@@ -11,6 +11,7 @@ import kotlinx.coroutines.tasks.await
 //Implementa PurchasesRepository utilizando Firestore.
 class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepository {
 
+    //Guarda una compra en Firestore.
     override suspend fun addPurchase(purchase: Purchases) {
         try {
             // .add() genera automáticamente el ID en Firestore
@@ -21,6 +22,7 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         }
     }
 
+    //Obtiene todas las compras.
     override suspend fun getPurchases(): List<String> {
         val shops = mutableListOf<String>()
         val result = db.collection("Purchases").get().await()
@@ -33,6 +35,7 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         return shops
     }
 
+    //Obtiene los detalles de todas las compras.
     override suspend fun getPurchasesDetail(): Flow<List<Purchases>> = callbackFlow {
         val result = db.collection("Purchases")
             .addSnapshotListener { value, error ->

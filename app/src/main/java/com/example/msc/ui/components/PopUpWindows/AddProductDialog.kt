@@ -42,10 +42,14 @@ fun AddProductDialog(
     onDismiss: () -> Unit,
     onConfirm: (Products) -> Unit
 ) {
+
+    //Variables para los campos del diálogo.
     var name by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
 
+    //Dialog hace que el contenido se muestre en pantalla.
+    //onDismissRequest se ejecuta cuando se pulsa fuera del diálogo.
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier

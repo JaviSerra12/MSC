@@ -38,16 +38,19 @@ import com.example.msc.ui.navigation.CustomBottomBar
 @Composable
 fun HomeScreen(navController: NavHostController) {
 
+    //Conexion a la base de datos.
     val databaseProvider = FirebaseDatabaseProvider()
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
 
-
+    //Logica de la pantalla.
     val viewModel : HomeScreenVM = viewModel(factory = HomeScreenVMFactory(repository))
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
+    //Variables
     var indexSelected by remember { mutableIntStateOf(0) }
 
+    //Mantiene la lista actualizada.
     LaunchedEffect(Unit) {
         viewModel.getPurchasesDetail()
     }
@@ -61,6 +64,7 @@ fun HomeScreen(navController: NavHostController) {
         )
     }
 
+    //Barra de navegación inferior.
     Scaffold(
         bottomBar = {
             CustomBottomBar(
@@ -70,6 +74,8 @@ fun HomeScreen(navController: NavHostController) {
             )
         }
     ) { paddingValues ->
+
+        //Modificar para hacer bien el Home
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,9 +91,9 @@ fun HomeScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(uiState.purchaseDetail) { note ->
+                items(uiState.purchaseDetail) { purchase ->
                     CardPurchasesHome(
-                        purchases = note,
+                        purchases = purchase,
                         onClick = { /* Info Ampliada */ }
                     )
                 }

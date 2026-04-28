@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import com.example.msc.ui.screen.loginScreen.LoginScreen
 import com.example.msc.ui.screen.registerScreen.RegisterScreen
 
+//Rutas de la aplicación para iniciar sesión y registrarse.
 fun NavGraphBuilder.authGraph(navController: NavController){
 
     composable(RouteGeneral.LoginScreen.route){

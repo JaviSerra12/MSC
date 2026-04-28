@@ -1,5 +1,6 @@
 package com.example.msc.ui.screen.loginScreen
 
+//Datos del login.
 data class LoginScreenUiState(
     val email : String = "",
     val password : String = "",

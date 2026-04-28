@@ -1,9 +1,6 @@
 package com.example.msc.ui.screen.registerScreen
 
-/**
- * Estado que representa los datos y el flujo de la pantalla de registro.
- * Incluye validaciones visuales y estados de carga.
- */
+//Datos del Register.
 data class RegisterScreenUiState(
     val username: String = "",
     val email : String = "",

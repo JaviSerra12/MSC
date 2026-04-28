@@ -20,6 +20,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.ui.theme.BlueMSC
 
+
+//Barra de navegación inferior.
 data class MenuItem(
     val title: String,
     val icon: ImageVector,

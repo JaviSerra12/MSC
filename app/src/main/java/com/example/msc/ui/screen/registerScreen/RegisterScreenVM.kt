@@ -9,17 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel encargado de la lógica de negocio de la pantalla de registro.
- * Maneja la validación de campos en tiempo real y la comunicación con el repositorio.
- */
+//Acciones de la pantalla.
 class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterScreenUiState())
     val uiState = _uiState.asStateFlow()
 
-    /**
-     * Actualiza el nombre de usuario y valida el estado general del formulario.
-     */
+    //Comprueba que el nombre de usuario es válido.
     fun onUsernameChange(value: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -29,9 +24,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
         }
     }
 
-    /**
-     * Actualiza el email, realiza validación de formato mediante Patterns y actualiza errores.
-     */
+    //Comprueba que el email es válido.
     fun onEmailChange(value: String) {
         _uiState.update { currentState ->
             val error = value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(value).matches()
@@ -43,9 +36,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
         }
     }
 
-    /**
-     * Gestiona el cambio de contraseña y valida la longitud mínima requerida por Firebase (6 caracteres).
-     */
+    //Comprueba que la contraseña es válida.
     fun onPasswordChange(value: String) {
         _uiState.update { currentState ->
             val error = value.length < 6 && value.isNotEmpty()
@@ -57,9 +48,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
         }
     }
 
-    /**
-     * Valida que la confirmación coincida exactamente con la contraseña introducida.
-     */
+    //Comprueba que la contraseña es válida y sea igual a la anterior.
     fun onConfirmPasswordChange(value: String) {
         _uiState.update { currentState ->
             val error = value != currentState.password
@@ -71,9 +60,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
         }
     }
 
-    /**
-     * Reúne todas las condiciones necesarias para permitir la pulsación del botón de registro.
-     */
+    //Valida que los datos del registro sean válidos.
     private fun validateRegister(email: String, pass: String, confirmPass: String, emailError: Boolean, username: String): Boolean {
         return email.isNotEmpty() && 
                pass.isNotEmpty() && 
@@ -84,9 +71,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
                pass.length >= 6
     }
 
-    /**
-     * Ejecuta el proceso de registro en segundo plano y gestiona el éxito o error de la operación.
-     */
+    //Acepta que el usuario se registre en la base de datos.
     fun onRegisterClicked(onSuccess: () -> Unit) {
         val email = _uiState.value.email
         val password = _uiState.value.password

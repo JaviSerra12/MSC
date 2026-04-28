@@ -12,10 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.BlueMSCerror
 
-/**
- * Arquitectura: Componente Stateless (UI pura).
- * No maneja estado interno de lógica de negocio, solo emite el evento click.
- */
 @Composable
 fun AddPurchaseButton(
     modifier: Modifier = Modifier,
