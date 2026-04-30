@@ -12,7 +12,10 @@ fun NavGraphBuilder.authGraph(navController: NavController){
     composable(RouteGeneral.LoginScreen.route){
         LoginScreen(
             loginClick = {
-                navController.navigate(RouteGeneral.HomeScreen.route)
+                navController.navigate(RouteGeneral.MainScreen.route) {
+                    //popUpTo hace que si pulsa atras no vuelvas al login.
+                    popUpTo(RouteGeneral.LoginScreen.route) { inclusive = true }
+                }
             },
             onRegisterClick = {
                 navController.navigate(RouteGeneral.RegisterScreen.route)
@@ -23,7 +26,10 @@ fun NavGraphBuilder.authGraph(navController: NavController){
     composable(RouteGeneral.RegisterScreen.route){
         RegisterScreen(
             onRegisterSuccess = {
-                navController.navigate(RouteGeneral.HomeScreen.route)
+                navController.navigate(RouteGeneral.MainScreen.route) {
+                    //popUpTo hace que si pulsa atras no vuelvas al register.
+                    popUpTo(RouteGeneral.LoginScreen.route) { inclusive = true }
+                }
             }
         )
     }

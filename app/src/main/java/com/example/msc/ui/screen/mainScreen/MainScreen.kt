@@ -1,2 +1,48 @@
 package com.example.msc.ui.screen.mainScreen
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.msc.ui.navigation.CustomBottomBar
+import com.example.msc.ui.navigation.RouteGeneral
+import com.example.msc.ui.screen.homeScreen.HomeScreen
+import com.example.msc.ui.screen.monthlyHomeScreen.MonthlyHomeScreen
+
+@Composable
+fun MainScreen(rootNavController: NavHostController) {
+    val bottomNavController = rememberNavController()
+    var indexSelected by remember { mutableIntStateOf(0) }
+
+    Scaffold(
+        bottomBar = {
+            CustomBottomBar(
+                navigationHomeScreen = bottomNavController,
+                indexSelected = indexSelected,
+                onItemClick = { indexSelected = it }
+            )
+        }
+    ) { paddingValues ->
+        NavHost(
+            navController = bottomNavController,
+            startDestination = RouteGeneral.MonthlyHomeScreen.route,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            composable(RouteGeneral.MonthlyHomeScreen.route) {
+                MonthlyHomeScreen(navController = bottomNavController)
+            }
+            composable(RouteGeneral.HomeScreen.route) {
+                HomeScreen(navController = bottomNavController)
+            }
+            // Puedes añadir aquí la ruta de Perfil si existe, por ahora MonthlyHome se usa para ambos en CustomBottomBar
+        }
+    }
+}
