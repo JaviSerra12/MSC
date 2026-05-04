@@ -34,7 +34,7 @@ import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, month: String = "") {
 
     //Conexion a la base de datos.
     val databaseProvider = FirebaseDatabaseProvider()
@@ -55,9 +55,9 @@ fun HomeScreen(navController: NavHostController) {
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    //Mantiene la lista actualizada.
-    LaunchedEffect(Unit) {
-        viewModel.getPurchasesDetail()
+    //Mantiene la lista actualizada filtrando por el mes recibido.
+    LaunchedEffect(month) {
+        viewModel.getPurchasesDetail(month)
     }
 
     if (uiState.isAddProductDialogVisible) {
@@ -76,7 +76,11 @@ fun HomeScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Compras", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
+        Text(
+            text = if (month.isNotEmpty()) "Compras de $month" else "Todas las Compras", 
+            fontSize = 24.sp, 
+            modifier = Modifier.padding(bottom = 16.dp, top = 16.dp)
+        )
 
         LazyColumn(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),

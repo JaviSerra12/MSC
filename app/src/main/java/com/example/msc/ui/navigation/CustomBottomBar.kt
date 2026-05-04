@@ -39,7 +39,8 @@ val menuItems = listOf(
         title = "Compras",
         icon = Icons.Default.ShoppingCart,
         navigate = {
-            it.navigate(RouteGeneral.HomeScreen.route)
+            //"Home" porque en este caso se pasa el parametro para filtrar cuando no pones mes
+            it.navigate("Home")
         },
         contentDescription = "Compras"
     ),

@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeScreenVM(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
@@ -20,11 +23,6 @@ class HomeScreenVM(
     
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
-
-    //Inicializa mostrando el detalle de las compras.
-    init {
-        getPurchasesDetail()
-    }
 
     //Cuando se pulsa el botón de añadir producto se muestra el diálogo.
     fun onAddProductClicked() {
@@ -51,11 +49,19 @@ class HomeScreenVM(
         }
     }
 
-    //Obtener el detalle de las compras.
-    fun getPurchasesDetail() {
+    //Obtener el detalle de las compras filtrado por mes.
+    fun getPurchasesDetail(monthFilter: String = "") {
         viewModelScope.launch {
             getPurchasesDetailUseCase().collect { purchases ->
-                _uiState.update { it.copy(purchaseDetail = purchases) }
+                val filteredPurchases = if (monthFilter.isNotEmpty()) {
+                    val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                    purchases.filter { 
+                        formatter.format(Date(it.createdAt)) == monthFilter 
+                    }
+                } else {
+                    purchases
+                }
+                _uiState.update { it.copy(purchaseDetail = filteredPurchases) }
             }
         }
     }

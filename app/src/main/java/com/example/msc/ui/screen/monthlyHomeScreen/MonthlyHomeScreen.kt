@@ -26,6 +26,7 @@ import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.ui.components.Cards.CardMonthlyHome
+import com.example.msc.ui.navigation.RouteGeneral
 
 @Composable
 fun MonthlyHomeScreen(navController: NavHostController) {
@@ -62,7 +63,10 @@ fun MonthlyHomeScreen(navController: NavHostController) {
                     CardMonthlyHome(
                         month = month,
                         totalSpent = total,
-                        onClick = { /* Navegar al detalle del mes */ }
+                        onClick = { 
+                            // Navegar al detalle del mes pasando el nombre del mes como parámetro
+                            navController.navigate(RouteGeneral.HomeScreen.createRoute(month))
+                        }
                     )
                 }
             }

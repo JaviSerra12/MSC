@@ -36,7 +36,7 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
     }
 
     //Obtiene los detalles de todas las compras.
-    override suspend fun getPurchasesDetail(): Flow<List<Purchases>> = callbackFlow {
+    override fun getPurchasesDetail(): Flow<List<Purchases>> = callbackFlow {
         val result = db.collection("Purchases")
             .addSnapshotListener { value, error ->
                 if (error != null) {
