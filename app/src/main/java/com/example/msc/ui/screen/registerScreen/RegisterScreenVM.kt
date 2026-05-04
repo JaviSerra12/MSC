@@ -3,14 +3,14 @@ package com.example.msc.ui.screen.registerScreen
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.msc.domain.repository.AuthRepository
+import com.example.msc.domain.usecase.auth.RegisterUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 //Acciones de la pantalla.
-class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel() {
+class RegisterScreenVM(private val registerUseCase: RegisterUseCase) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterScreenUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -80,7 +80,7 @@ class RegisterScreenVM(private val authRepository: AuthRepository) : ViewModel()
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, registerError = null) }
             
-            val result = authRepository.register(email, password, username)
+            val result = registerUseCase(email, password, username)
             
             result.onSuccess {
                 _uiState.update { it.copy(isLoading = false) }

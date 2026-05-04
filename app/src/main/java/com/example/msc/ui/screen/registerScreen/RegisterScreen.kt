@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.msc.data.repository.FirebaseAuthRepository
+import com.example.msc.domain.usecase.auth.RegisterUseCase
 import com.example.msc.ui.components.Buttons.ButtonLogIn
 import com.example.msc.ui.components.login.TextFieldEmail
 import com.example.msc.ui.components.login.TextFieldPassword
@@ -32,10 +34,11 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
 
     //Autentificacion de usuario.
     val authRepository = FirebaseAuthRepository()
+    val registerUseCase = RegisterUseCase(authRepository)
 
     //Logica de la pantalla.
     val viewModel: RegisterScreenVM = viewModel(
-        factory = RegisterScreenVMFactory(authRepository)
+        factory = RegisterScreenVMFactory(registerUseCase)
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

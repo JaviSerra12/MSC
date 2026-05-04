@@ -26,6 +26,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseNoteRepository
+import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
+import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
+import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
@@ -37,9 +40,19 @@ fun HomeScreen(navController: NavHostController) {
     val databaseProvider = FirebaseDatabaseProvider()
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
+    
+    val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
+    val getPurchasesShopUseCase = GetPurchasesShopUseCase(repository)
+    val addPurchaseUseCase = AddPurchaseUseCase(repository)
 
     //Logica de la pantalla.
-    val viewModel : HomeScreenVM = viewModel(factory = HomeScreenVMFactory(repository))
+    val viewModel : HomeScreenVM = viewModel(
+        factory = HomeScreenVMFactory(
+            getPurchasesDetailUseCase,
+            getPurchasesShopUseCase,
+            addPurchaseUseCase
+        )
+    )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     //Mantiene la lista actualizada.
@@ -56,7 +69,6 @@ fun HomeScreen(navController: NavHostController) {
         )
     }
 
-    // Se ha quitado el Scaffold para evitar duplicidad.
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,6 +104,6 @@ fun HomeScreen(navController: NavHostController) {
 
 @Composable
 @Preview
-fun MainScreenPreview() {
+fun HomeScreenPreview() {
   HomeScreen(navController = rememberNavController())
 }

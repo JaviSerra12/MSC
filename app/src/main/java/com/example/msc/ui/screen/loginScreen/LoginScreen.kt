@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.msc.data.repository.FirebaseAuthRepository
+import com.example.msc.domain.usecase.auth.LoginUseCase
 import com.example.msc.ui.components.Buttons.ButtonLogIn
 import com.example.msc.ui.components.login.TextFieldEmail
 import com.example.msc.ui.components.login.TextFieldPassword
@@ -35,10 +36,11 @@ fun LoginScreen(loginClick: () -> Unit, onRegisterClick: () -> Unit) {
 
     //Autentificacion de usuario.
     val authRepository = FirebaseAuthRepository()
+    val loginUseCase = LoginUseCase(authRepository)
 
     //Logica de la pantalla.
     val viewModel: LoginScreenVM = viewModel(
-        factory = LoginScreenVMFactory(authRepository)
+        factory = LoginScreenVMFactory(loginUseCase)
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

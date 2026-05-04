@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface PurchasesRepository {
     suspend fun addPurchase(purchase: Purchases)
     suspend fun getPurchases() : List<String>
-    suspend fun getPurchasesDetail() : Flow<List<Purchases>>
+    fun getPurchasesDetail() : Flow<List<Purchases>>
 }

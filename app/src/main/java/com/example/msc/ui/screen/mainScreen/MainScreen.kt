@@ -42,7 +42,7 @@ fun MainScreen(rootNavController: NavHostController) {
             composable(RouteGeneral.HomeScreen.route) {
                 HomeScreen(navController = bottomNavController)
             }
-            // Puedes añadir aquí la ruta de Perfil si existe, por ahora MonthlyHome se usa para ambos en CustomBottomBar
+            //Añadir aquí la ruta de Perfil
         }
     }
 }

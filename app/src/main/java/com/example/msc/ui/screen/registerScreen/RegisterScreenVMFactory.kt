@@ -2,17 +2,17 @@ package com.example.msc.ui.screen.registerScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.msc.domain.repository.AuthRepository
+import com.example.msc.domain.usecase.auth.RegisterUseCase
 
 //Sirve para crear el ViewModel con parametros (No se puede crear en la vista) y por eso se usa Factory
 class RegisterScreenVMFactory(
-    private val authRepository: AuthRepository
+    private val registerUseCase: RegisterUseCase
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RegisterScreenVM::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RegisterScreenVM(authRepository) as T
+            return RegisterScreenVM(registerUseCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

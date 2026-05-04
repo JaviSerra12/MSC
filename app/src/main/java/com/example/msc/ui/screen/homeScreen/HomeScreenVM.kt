@@ -2,16 +2,22 @@ package com.example.msc.ui.screen.homeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.msc.domain.repository.PurchasesRepository
 import com.example.msc.domain.model.Purchases
 import com.example.msc.domain.model.Products
+import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
+import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
+import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-//Acciones de la pantalla.
-class HomeScreenVM(private val repository: PurchasesRepository) : ViewModel() {
+class HomeScreenVM(
+    private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
+    private val getPurchasesShopUseCase: GetPurchasesShopUseCase,
+    private val addPurchaseUseCase: AddPurchaseUseCase
+) : ViewModel() {
+    
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -32,8 +38,6 @@ class HomeScreenVM(private val repository: PurchasesRepository) : ViewModel() {
 
     //Cuando se pulsa el botón de añadir producto se añade el producto a la compra actual. (hay que cambiarlo)
     fun onConfirmAddProduct(product: Products) {
-        // Aquí se puede implementar la lógica para añadir el producto a una compra actual
-        // Por ahora solo se cierra el diálogo.
         _uiState.update { it.copy(isAddProductDialogVisible = false) }
 
         // viewModelScope.launch { repository.addProductToPurchase(product) }
@@ -42,7 +46,7 @@ class HomeScreenVM(private val repository: PurchasesRepository) : ViewModel() {
     //Obtener las compras por tienda.
     fun getPurchasesShop() {
         viewModelScope.launch {
-            val titles = repository.getPurchases()
+            val titles = getPurchasesShopUseCase()
             _uiState.update { it.copy(purchaseTitles = titles) }
         }
     }
@@ -50,7 +54,7 @@ class HomeScreenVM(private val repository: PurchasesRepository) : ViewModel() {
     //Obtener el detalle de las compras.
     fun getPurchasesDetail() {
         viewModelScope.launch {
-            repository.getPurchasesDetail().collect { purchases ->
+            getPurchasesDetailUseCase().collect { purchases ->
                 _uiState.update { it.copy(purchaseDetail = purchases) }
             }
         }
@@ -58,10 +62,8 @@ class HomeScreenVM(private val repository: PurchasesRepository) : ViewModel() {
 
     //Añade una compra a la base de datos.
     fun addPurchase(purchase: Purchases) {
-
-        //Hay que hacer que se añada a un ID de compra para añadirlo a la base de datos.
         viewModelScope.launch {
-            repository.addPurchase(purchase)
+            addPurchaseUseCase(purchase)
         }
     }
 }

@@ -3,14 +3,14 @@ package com.example.msc.ui.screen.loginScreen
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.msc.domain.repository.AuthRepository
+import com.example.msc.domain.usecase.auth.LoginUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 //Acciones de la pantalla.
-class LoginScreenVM(private val authRepository: AuthRepository) : ViewModel() {
+class LoginScreenVM(private val loginUseCase: LoginUseCase) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -43,17 +43,19 @@ class LoginScreenVM(private val authRepository: AuthRepository) : ViewModel() {
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, loginError = null) }
-            
-            val result = authRepository.login(email, password)
-            
+
+            val result = loginUseCase(email, password)
+
             result.onSuccess {
                 _uiState.update { it.copy(isLoading = false) }
                 onSuccess()
             }.onFailure { exception ->
-                _uiState.update { it.copy(
-                    isLoading = false, 
-                    loginError = exception.message ?: "Error desconocido"
-                ) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        loginError = exception.message ?: "Error desconocido"
+                    )
+                }
             }
         }
     }
