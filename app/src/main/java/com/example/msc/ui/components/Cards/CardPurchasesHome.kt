@@ -18,12 +18,10 @@ import com.example.msc.domain.model.Purchases
 import com.example.msc.ui.theme.BlueMSC
 
 @Composable
-
 fun CardPurchasesHome(
     purchases: Purchases,
     onClick: () -> Unit
 ) {
-
     Column(verticalArrangement = Arrangement.spacedBy(-8.dp)) {
         Card(
             onClick = onClick,
@@ -35,39 +33,22 @@ fun CardPurchasesHome(
                 disabledContainerColor = BlueMSC,
                 disabledContentColor = Color.White
             ),
-
-            ) {
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 10.dp,
-                        bottom = 10.dp
-                    ),
+                    .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CustomShopCard(
-                        text = purchases.shop,
-                        color = Color.White
-                    )
-
-                    CustomPriceCard(
-                        textPrice = purchases.totalPrice(),
-                        color = Color.White
-                    )
-
+                    CustomShopCard(text = purchases.shop, color = Color.White)
+                    CustomPriceCard(textPrice = purchases.totalPrice, color = Color.White)
                 }
-
             }
-
         }
 
         Card(
@@ -80,45 +61,25 @@ fun CardPurchasesHome(
                 disabledContainerColor = BlueMSC,
                 disabledContentColor = Color.White
             ),
-
-            ) {
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 10.dp,
-                        bottom = 10.dp
-                    ), // Añadido padding end para el precio
+                    .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    CustomUserCard(
-                        text = purchases.user,
-                        color = Color.Black
-                    )
-
-                    CustomDateCard(
-                        createdAt = purchases.createdAt,
-                        color = Color.Black
-                    )
-
+                    CustomUserCard(text = purchases.user, color = Color.Black)
+                    CustomDateCard(createdAt = purchases.createdAt, color = Color.Black)
                 }
-
             }
-
         }
     }
-
 }
-
 
 @Preview
 @Composable

@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseNoteRepository
+import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.ui.components.Cards.CardMonthlyHome
 import com.example.msc.ui.navigation.RouteGeneral
@@ -35,10 +36,15 @@ fun MonthlyHomeScreen(navController: NavHostController) {
     val databaseProvider = FirebaseDatabaseProvider()
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
+    
+    // Casos de Uso
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
+    val getMonthlyExpensesUseCase = GetMonthlyExpensesUseCase()
 
     //Logica de la pantalla.
-    val viewModel : MonthlyHomeScreenVM = viewModel(factory = MonthlyHomeScreenVMFactory(getPurchasesDetailUseCase))
+    val viewModel : MonthlyHomeScreenVM = viewModel(
+        factory = MonthlyHomeScreenVMFactory(getPurchasesDetailUseCase, getMonthlyExpensesUseCase)
+    )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
