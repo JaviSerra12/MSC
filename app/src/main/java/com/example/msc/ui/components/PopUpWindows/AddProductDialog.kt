@@ -1,28 +1,13 @@
 package com.example.msc.ui.components.PopUpWindows
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,17 +24,15 @@ import com.example.msc.ui.theme.BlueMSCborder
 
 @Composable
 fun AddProductDialog(
+    shopName: String,
     onDismiss: () -> Unit,
-    onConfirm: (Products) -> Unit
+    onConfirm: (List<Products>) -> Unit
 ) {
-
-    //Variables para los campos del diálogo.
     var name by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
+    var productList by remember { mutableStateOf(listOf<Products>()) }
 
-    //Dialog hace que el contenido se muestre en pantalla.
-    //onDismissRequest se ejecuta cuando se pulsa fuera del diálogo.
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -66,7 +49,7 @@ fun AddProductDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Añadir Producto",
+                    text = "Compra en $shopName",
                     fontFamily = dosisRegular,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -102,6 +85,58 @@ fun AddProductDialog(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (name.isNotEmpty()) {
+                            val p = price.toDoubleOrNull() ?: 0.0
+                            val q = quantity.toIntOrNull() ?: 1
+                            productList = productList + Products(name, p, q)
+                            name = ""
+                            price = ""
+                            quantity = ""
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = BlueMSC),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Añadir a la lista", color = Color.White, fontFamily = dosisRegular)
+                }
+
+                if (productList.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Productos añadidos:",
+                        fontFamily = dosisRegular,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                            .padding(vertical = 8.dp)
+                    ) {
+                        items(productList) { product ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 2.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(product.name, fontFamily = dosisRegular)
+                                Text(
+                                    "${product.quantity} x ${product.price}€",
+                                    fontFamily = dosisRegular
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
@@ -113,15 +148,12 @@ fun AddProductDialog(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
-                        onClick = {
-                            val p = price.toDoubleOrNull() ?: 0.0
-                            val q = quantity.toIntOrNull() ?: 0
-                            onConfirm(Products(name, p, q))
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = BlueMSC),
+                        onClick = { onConfirm(productList) },
+                        enabled = productList.isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Añadir", color = Color.White, fontFamily = dosisRegular)
+                        Text("Finalizar", color = Color.White, fontFamily = dosisRegular)
                     }
                 }
             }
@@ -129,33 +161,9 @@ fun AddProductDialog(
     }
 }
 
-@Composable
-fun CustomDialogTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    keyboardType: KeyboardType,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label, fontFamily = dosisRegular) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = BlueMSCborder,
-            unfocusedBorderColor = BlueMSC,
-            focusedLabelColor = BlueMSCborder,
-            unfocusedLabelColor = BlueMSC
-        ),
-        singleLine = true
-    )
-}
 
 @Preview
 @Composable
 fun AddProductDialogPreview() {
-    AddProductDialog(onDismiss = {}, onConfirm = {})
+    AddProductDialog(onDismiss = {}, onConfirm = {}, shopName = "Mercadona")
 }

@@ -2,6 +2,8 @@ package com.example.msc.ui.screen.monthlyHomeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,13 +13,27 @@ import kotlinx.coroutines.launch
 
 class MonthlyHomeScreenVM(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
-    private val getMonthlyExpensesUseCase: GetMonthlyExpensesUseCase
+    private val getMonthlyExpensesUseCase: GetMonthlyExpensesUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getUsernameUseCase: GetUsernameUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MonthlyHomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
+        loadUserData()
         getMonthlyPurchases()
+    }
+
+    private fun loadUserData() {
+        val firebaseUser = getCurrentUserUseCase()
+        firebaseUser?.let { user ->
+            viewModelScope.launch {
+                val userData = getUsernameUseCase(user.uid)
+                val currentUsername = userData?.username ?: user.displayName ?: "User"
+                _uiState.update { it.copy(username = currentUsername) }
+            }
+        }
     }
 
     fun getMonthlyPurchases() {

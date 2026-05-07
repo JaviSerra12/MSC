@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.msc.domain.model.Purchases
 import com.example.msc.domain.model.Products
+import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
@@ -18,30 +20,75 @@ import java.util.Locale
 class HomeScreenVM(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
     private val getPurchasesShopUseCase: GetPurchasesShopUseCase,
-    private val addPurchaseUseCase: AddPurchaseUseCase
+    private val addPurchaseUseCase: AddPurchaseUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getUsernameUseCase: GetUsernameUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
-    //Cuando se pulsa el botón de añadir producto se muestra el diálogo.
-    fun onAddProductClicked() {
-        _uiState.update { it.copy(isAddProductDialogVisible = true) }
+    private var currentUsername: String = ""
+
+    init {
+        loadUserData()
     }
 
-    //Cuando se pulsa fuera del diálogo se oculta.
+    private fun loadUserData() {
+        val firebaseUser = getCurrentUserUseCase()
+        firebaseUser?.let { user ->
+            viewModelScope.launch {
+                val userData = getUsernameUseCase(user.uid)
+                currentUsername = userData?.username ?: user.displayName ?: "User"
+                _uiState.update { it.copy(username = currentUsername) }
+            }
+        }
+    }
+
+    // Muestra el diálogo para añadir el nombre de la tienda
+    fun onAddPurchaseClicked() {
+        _uiState.update { it.copy(isAddShopDialogVisible = true) }
+    }
+
+    // Oculta el diálogo de la tienda
+    fun onDismissAddShopDialog() {
+        _uiState.update { it.copy(isAddShopDialogVisible = false) }
+    }
+
+    // Al confirmar la tienda guarda el nombre y muestra el diálogo de productos
+    fun onConfirmShop(shopName: String) {
+        _uiState.update { 
+            it.copy(
+                isAddShopDialogVisible = false,
+                isAddProductDialogVisible = true,
+                tempShopName = shopName
+            ) 
+        }
+    }
+
+    // Oculta el diálogo de productos
     fun onDismissAddProductDialog() {
-        _uiState.update { it.copy(isAddProductDialogVisible = false) }
+        _uiState.update { it.copy(isAddProductDialogVisible = false, tempShopName = "") }
     }
 
-    //Cuando se pulsa el botón de añadir producto se añade el producto a la compra actual. (hay que cambiarlo)
-    fun onConfirmAddProduct(product: Products) {
-        _uiState.update { it.copy(isAddProductDialogVisible = false) }
+    // Al finalizar la lista de productos, crea la compra y la guarda en la BD
+    fun onConfirmAddProducts(products: List<Products>) {
+        val shopName = _uiState.value.tempShopName
+        val newPurchase = Purchases(
+            shop = shopName,
+            products = products,
+            createdAt = System.currentTimeMillis(),
+            user = currentUsername
+        )
+        
+        _uiState.update { it.copy(isAddProductDialogVisible = false, tempShopName = "") }
 
-        // viewModelScope.launch { repository.addProductToPurchase(product) }
+        viewModelScope.launch {
+            addPurchaseUseCase(newPurchase)
+        }
     }
 
-    //Obtener las compras por tienda.
+    // Obtener las compras por tienda.
     fun getPurchasesShop() {
         viewModelScope.launch {
             val titles = getPurchasesShopUseCase()
@@ -49,7 +96,7 @@ class HomeScreenVM(
         }
     }
 
-    //Obtener el detalle de las compras filtrado por mes.
+    // Obtener el detalle de las compras filtrado por mes.
     fun getPurchasesDetail(monthFilter: String = "") {
         viewModelScope.launch {
             getPurchasesDetailUseCase().collect { purchases ->
@@ -63,13 +110,6 @@ class HomeScreenVM(
                 }
                 _uiState.update { it.copy(purchaseDetail = filteredPurchases) }
             }
-        }
-    }
-
-    //Añade una compra a la base de datos.
-    fun addPurchase(purchase: Purchases) {
-        viewModelScope.launch {
-            addPurchaseUseCase(purchase)
         }
     }
 }

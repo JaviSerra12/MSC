@@ -3,8 +3,10 @@ package com.example.msc.ui.screen.monthlyHomeScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,10 +25,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
+import com.example.msc.data.repository.FirebaseAuthRepository
 import com.example.msc.data.repository.FirebaseNoteRepository
+import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.ui.components.Cards.CardMonthlyHome
+import com.example.msc.ui.components.login.ShowUser
 import com.example.msc.ui.navigation.RouteGeneral
 
 @Composable
@@ -36,14 +42,22 @@ fun MonthlyHomeScreen(navController: NavHostController) {
     val databaseProvider = FirebaseDatabaseProvider()
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
+    val authRepository = FirebaseAuthRepository()
     
     // Casos de Uso
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
     val getMonthlyExpensesUseCase = GetMonthlyExpensesUseCase()
+    val getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
+    val getUsernameUseCase = GetUsernameUseCase(authRepository)
 
     //Logica de la pantalla.
     val viewModel : MonthlyHomeScreenVM = viewModel(
-        factory = MonthlyHomeScreenVMFactory(getPurchasesDetailUseCase, getMonthlyExpensesUseCase)
+        factory = MonthlyHomeScreenVMFactory(
+            getPurchasesDetailUseCase, 
+            getMonthlyExpensesUseCase,
+            getCurrentUserUseCase,
+            getUsernameUseCase
+        )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -53,8 +67,15 @@ fun MonthlyHomeScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            ShowUser(username = uiState.username)
+        }
+
         Text(text = "Gastos Mensuales", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp, top = 16.dp))
 
         if (uiState.isLoading) {

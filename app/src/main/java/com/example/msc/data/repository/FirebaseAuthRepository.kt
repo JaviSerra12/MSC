@@ -53,6 +53,16 @@ class FirebaseAuthRepository(
         return firebaseAuth.currentUser
     }
 
+    // Obtiene el nombre de usuario
+    override suspend fun getUsername(uid: String): User? {
+        return try {
+            val document = firestore.collection("users").document(uid).get().await()
+            document.toObject(User::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     //Cierra la sesión del usuario. (Sin implementar)
     override fun logout() {
         firebaseAuth.signOut()

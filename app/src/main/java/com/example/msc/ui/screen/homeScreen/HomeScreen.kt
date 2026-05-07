@@ -3,8 +3,10 @@ package com.example.msc.ui.screen.homeScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,13 +27,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
+import com.example.msc.data.repository.FirebaseAuthRepository
 import com.example.msc.data.repository.FirebaseNoteRepository
+import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
+import com.example.msc.ui.components.PopUpWindows.AddShopDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
+import com.example.msc.ui.components.login.ShowUser
 
 @Composable
 fun HomeScreen(navController: NavHostController, month: String = "") {
@@ -40,17 +47,22 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     val databaseProvider = FirebaseDatabaseProvider()
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
+    val authRepository = FirebaseAuthRepository()
     
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
     val getPurchasesShopUseCase = GetPurchasesShopUseCase(repository)
     val addPurchaseUseCase = AddPurchaseUseCase(repository)
+    val getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
+    val getUsernameUseCase = GetUsernameUseCase(authRepository)
 
     //Logica de la pantalla.
     val viewModel : HomeScreenVM = viewModel(
         factory = HomeScreenVMFactory(
             getPurchasesDetailUseCase,
             getPurchasesShopUseCase,
-            addPurchaseUseCase
+            addPurchaseUseCase,
+            getCurrentUserUseCase,
+            getUsernameUseCase
         )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,11 +72,23 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
         viewModel.getPurchasesDetail(month)
     }
 
+    // Diálogo para pedir el nombre de la tienda
+    if (uiState.isAddShopDialogVisible) {
+        AddShopDialog(
+            onDismiss = { viewModel.onDismissAddShopDialog() },
+            onConfirm = { shopName ->
+                viewModel.onConfirmShop(shopName)
+            }
+        )
+    }
+
+    // Diálogo para añadir productos a la tienda
     if (uiState.isAddProductDialogVisible) {
         AddProductDialog(
+            shopName = uiState.tempShopName,
             onDismiss = { viewModel.onDismissAddProductDialog() },
-            onConfirm = { product ->
-                viewModel.onConfirmAddProduct(product)
+            onConfirm = { products ->
+                viewModel.onConfirmAddProducts(products)
             }
         )
     }
@@ -74,8 +98,15 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             .fillMaxSize()
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            ShowUser(username = uiState.username)
+        }
+
         Text(
             text = if (month.isNotEmpty()) "Compras de $month" else "Todas las Compras", 
             fontSize = 24.sp, 
@@ -83,7 +114,9 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
         )
 
         LazyColumn(
-            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -99,7 +132,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
 
         AddPurchaseButton(
             modifier = Modifier.size(60.dp),
-            onClick = { viewModel.onAddProductClicked() }
+            onClick = { viewModel.onAddPurchaseClicked() }
         )
         
         Spacer(modifier = Modifier.height(16.dp))
