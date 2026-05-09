@@ -39,6 +39,7 @@ import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
 import com.example.msc.ui.components.login.ShowUser
+import com.example.msc.ui.navigation.RouteGeneral
 
 @Composable
 fun HomeScreen(navController: NavHostController, month: String = "") {
@@ -66,6 +67,13 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
         )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Mantiene los eventos de navegación del ViewModel actualizada
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { purchaseId ->
+            navController.navigate(RouteGeneral.PurchasesDetailScreen.createRoute(purchaseId))
+        }
+    }
 
     //Mantiene la lista actualizada filtrando por el mes recibido.
     LaunchedEffect(month) {
@@ -123,7 +131,9 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             items(uiState.purchaseDetail) { purchase ->
                 CardPurchasesHome(
                     purchases = purchase,
-                    onClick = { /* Info Ampliada */ }
+                    onClick = { 
+                        viewModel.onPurchaseClicked(purchase.id)
+                    }
                 )
             }
         }

@@ -19,6 +19,7 @@ import com.example.msc.ui.navigation.CustomBottomBar
 import com.example.msc.ui.navigation.RouteGeneral
 import com.example.msc.ui.screen.homeScreen.HomeScreen
 import com.example.msc.ui.screen.monthlyHomeScreen.MonthlyHomeScreen
+import com.example.msc.ui.screen.purchasesDetailScreen.PurchasesDetailScreen
 
 @Composable
 fun MainScreen(rootNavController: NavHostController) {
@@ -65,6 +66,13 @@ fun MainScreen(rootNavController: NavHostController) {
             ) { backStackEntry ->
                 val month = backStackEntry.arguments?.getString("month") ?: ""
                 HomeScreen(navController = bottomNavController, month = month)
+            }
+            composable(
+                route = RouteGeneral.PurchasesDetailScreen.route,
+                arguments = listOf(navArgument("purchaseId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val purchaseId = backStackEntry.arguments?.getString("purchaseId") ?: ""
+                PurchasesDetailScreen(navController = bottomNavController, purchaseId = purchaseId)
             }
             //Añadir aquí la ruta de Perfil
         }

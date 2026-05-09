@@ -9,7 +9,9 @@ import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,6 +30,10 @@ class HomeScreenVM(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
+    // MutableSharedFlow gestiona los eventos de navegación
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
+
     private var currentUsername: String = ""
 
     init {
@@ -42,6 +48,13 @@ class HomeScreenVM(
                 currentUsername = userData?.username ?: user.displayName ?: "User"
                 _uiState.update { it.copy(username = currentUsername) }
             }
+        }
+    }
+
+    // Muestra todos los productos de una compra
+    fun onPurchaseClicked(purchaseId: String) {
+        viewModelScope.launch {
+            _navigationEvent.emit(purchaseId)
         }
     }
 

@@ -48,4 +48,18 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
             }
         awaitClose { result.remove() }
     }
+
+    //Obtiene los detalles de una compra por su ID.
+    override fun getPurchaseById(purchaseId: String): Flow<Purchases?> = callbackFlow {
+        val result = db.collection("Purchases").document(purchaseId)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val purchase = value?.toObject(Purchases::class.java)
+                trySend(purchase)
+            }
+        awaitClose { result.remove() }
+    }
 }
