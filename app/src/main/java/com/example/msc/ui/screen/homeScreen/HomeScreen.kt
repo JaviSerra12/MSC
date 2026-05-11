@@ -49,7 +49,8 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
     val authRepository = FirebaseAuthRepository()
-    
+
+    // UseCase de la pantalla.
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
     val getPurchasesShopUseCase = GetPurchasesShopUseCase(repository)
     val addPurchaseUseCase = AddPurchaseUseCase(repository)

@@ -16,5 +16,11 @@ interface AuthRepository {
     //Obtiene el nickname (username) del usuario desde Firestore.
     suspend fun getUsername(uid: String): User?
 
+    //Funciones del perfil
     fun logout()
+
+    suspend fun updateUsername(uid: String, newUsername: String): Result<Unit>
+    suspend fun updateEmail(newEmail: String): Result<Unit>
+    suspend fun updatePassword(newPassword: String): Result<Unit>
+    suspend fun reauthenticate(password: String): Result<Unit>
 }

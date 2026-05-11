@@ -2,6 +2,7 @@ package com.example.msc.data.repository
 
 import com.example.msc.domain.model.User
 import com.example.msc.domain.repository.AuthRepository
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -63,8 +64,55 @@ class FirebaseAuthRepository(
         }
     }
 
-    //Cierra la sesión del usuario. (Sin implementar)
+    //Cierra la sesión del usuario.
     override fun logout() {
         firebaseAuth.signOut()
+    }
+
+    //Cambia el nombre de usuario
+    override suspend fun updateUsername(uid: String, newUsername: String): Result<Unit> {
+        return try {
+            firestore.collection("users").document(uid).update("username", newUsername).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //Cambia el email del usuario
+    override suspend fun updateEmail(newEmail: String): Result<Unit> {
+        return try {
+            firebaseAuth.currentUser?.updateEmail(newEmail)?.await()
+            val uid = firebaseAuth.currentUser?.uid
+            if (uid != null) {
+                firestore.collection("users").document(uid).update("email", newEmail).await()
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //Cambia la contraseña del usuario
+    override suspend fun updatePassword(newPassword: String): Result<Unit> {
+        return try {
+            firebaseAuth.currentUser?.updatePassword(newPassword)?.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //Comprueba el email y la contraseña actual para reautentificar el usuario
+    override suspend fun reauthenticate(password: String): Result<Unit> {
+        return try {
+            val user = firebaseAuth.currentUser
+            val email = user?.email ?: return Result.failure(Exception("No user logged in"))
+            val credential = EmailAuthProvider.getCredential(email, password)
+            user.reauthenticate(credential).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

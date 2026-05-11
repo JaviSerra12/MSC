@@ -19,6 +19,7 @@ import com.example.msc.ui.navigation.CustomBottomBar
 import com.example.msc.ui.navigation.RouteGeneral
 import com.example.msc.ui.screen.homeScreen.HomeScreen
 import com.example.msc.ui.screen.monthlyHomeScreen.MonthlyHomeScreen
+import com.example.msc.ui.screen.profileScreen.ProfileScreen
 import com.example.msc.ui.screen.purchasesDetailScreen.PurchasesDetailScreen
 
 @Composable
@@ -26,14 +27,13 @@ fun MainScreen(rootNavController: NavHostController) {
     val bottomNavController = rememberNavController()
     var indexSelected by remember { mutableIntStateOf(0) }
 
-    // Sincroniza el índice de la BottomBar con la ruta actual
-    // LaunchedEffect hace que el bloque de código se ejecute solo una vez al inicializar el Composable
     LaunchedEffect(bottomNavController) {
         bottomNavController.currentBackStackEntryFlow.collect { backStackEntry ->
             val route = backStackEntry.destination.route
             indexSelected = when {
                 route?.contains(RouteGeneral.MonthlyHomeScreen.route) == true -> 0
                 route?.contains("Home") == true -> 1
+                route?.contains(RouteGeneral.ProfileScreen.route) == true -> 2
                 else -> indexSelected
             }
         }
@@ -74,7 +74,11 @@ fun MainScreen(rootNavController: NavHostController) {
                 val purchaseId = backStackEntry.arguments?.getString("purchaseId") ?: ""
                 PurchasesDetailScreen(navController = bottomNavController, purchaseId = purchaseId)
             }
-            //Añadir aquí la ruta de Perfil
+            composable(
+                route = RouteGeneral.ProfileScreen.route
+            ) {
+                ProfileScreen(navController = bottomNavController)
+            }
         }
     }
 }

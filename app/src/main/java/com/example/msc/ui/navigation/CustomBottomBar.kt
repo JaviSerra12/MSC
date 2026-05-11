@@ -39,7 +39,6 @@ val menuItems = listOf(
         title = "Compras",
         icon = Icons.Default.ShoppingCart,
         navigate = {
-            //"Home" porque en este caso se pasa el parametro para filtrar cuando no pones mes
             it.navigate("Home")
         },
         contentDescription = "Compras"
@@ -48,7 +47,7 @@ val menuItems = listOf(
         title = "Perfil",
         icon = Icons.Default.Person,
         navigate = {
-            it.navigate(RouteGeneral.MonthlyHomeScreen.route)
+            it.navigate(RouteGeneral.ProfileScreen.route)
         },
         contentDescription = "Perfil"
     ),

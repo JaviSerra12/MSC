@@ -16,4 +16,6 @@ sealed class RouteGeneral(val route : String) {
     object PurchasesDetailScreen : RouteGeneral("PurchasesDetail/{purchaseId}") {
         fun createRoute(purchaseId: String) = "PurchasesDetail/$purchaseId"
     }
+
+    object ProfileScreen : RouteGeneral("Profile")
 }
