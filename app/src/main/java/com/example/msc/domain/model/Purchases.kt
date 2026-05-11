@@ -4,6 +4,7 @@ import com.google.firebase.firestore.DocumentId
 
 //Datos que contienen las compras.
 data class Purchases(
+    // DocumentId es la clave primaria de la colección
     @DocumentId
     val id: String = "",
     val shop: String = "",

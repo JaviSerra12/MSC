@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import com.example.msc.domain.model.Products
 import com.example.msc.ui.components.Text.dosisRegular
 import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.BlueMSCborder
+import com.example.msc.ui.theme.DarkBlueMSC
 
 @Composable
 fun AddProductDialog(
@@ -125,13 +128,30 @@ fun AddProductDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 2.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(product.name, fontFamily = dosisRegular)
                                 Text(
-                                    "${product.quantity} x ${product.price}€",
-                                    fontFamily = dosisRegular
+                                    text = product.name,
+                                    fontFamily = dosisRegular,
+                                    modifier = Modifier.weight(1f)
                                 )
+                                Text(
+                                    text = "${product.quantity} x ${product.price}€",
+                                    fontFamily = dosisRegular,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                                IconButton(
+                                    onClick = { productList = productList - product },
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Eliminar producto",
+                                        tint = DarkBlueMSC,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
                     }
