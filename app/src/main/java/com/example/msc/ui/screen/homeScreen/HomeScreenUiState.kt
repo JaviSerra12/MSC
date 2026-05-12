@@ -9,5 +9,6 @@ data class HomeScreenUiState(
     val isAddProductDialogVisible: Boolean = false,
     val isAddShopDialogVisible: Boolean = false,
     val tempShopName: String = "",
-    val username: String = ""
+    val username: String = "",
+    val isEditMode: Boolean = false
 )

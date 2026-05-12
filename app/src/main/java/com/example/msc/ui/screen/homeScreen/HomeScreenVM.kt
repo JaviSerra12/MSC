@@ -7,6 +7,7 @@ import com.example.msc.domain.model.Products
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
+import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +24,7 @@ class HomeScreenVM(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
     private val getPurchasesShopUseCase: GetPurchasesShopUseCase,
     private val addPurchaseUseCase: AddPurchaseUseCase,
+    private val deletePurchaseUseCase: DeletePurchaseUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUsernameUseCase: GetUsernameUseCase
 ) : ViewModel() {
@@ -53,6 +55,7 @@ class HomeScreenVM(
 
     // Muestra todos los productos de una compra
     fun onPurchaseClicked(purchaseId: String) {
+        if (_uiState.value.isEditMode) return
         viewModelScope.launch {
             _navigationEvent.emit(purchaseId)
         }
@@ -123,6 +126,18 @@ class HomeScreenVM(
                 }
                 _uiState.update { it.copy(purchaseDetail = filteredPurchases) }
             }
+        }
+    }
+
+    //Cuando se pulsa editar se cambia el estado de isEditMode a true.
+    fun onEditClicked() {
+        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
+    }
+
+    //Borra una compra
+    fun onDeletePurchase(purchaseId: String) {
+        viewModelScope.launch {
+            deletePurchaseUseCase(purchaseId)
         }
     }
 }

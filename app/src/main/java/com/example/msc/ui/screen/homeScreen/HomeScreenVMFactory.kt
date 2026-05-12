@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
+import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 
@@ -13,6 +14,7 @@ class HomeScreenVMFactory(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
     private val getPurchasesShopUseCase: GetPurchasesShopUseCase,
     private val addPurchaseUseCase: AddPurchaseUseCase,
+    private val deletePurchaseUseCase: DeletePurchaseUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUsernameUseCase: GetUsernameUseCase
 ) : ViewModelProvider.Factory {
@@ -24,6 +26,7 @@ class HomeScreenVMFactory(
                 getPurchasesDetailUseCase,
                 getPurchasesShopUseCase,
                 addPurchaseUseCase,
+                deletePurchaseUseCase,
                 getCurrentUserUseCase,
                 getUsernameUseCase
             ) as T

@@ -43,7 +43,11 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
                     close(error)
                     return@addSnapshotListener
                 }
-                val purchases = value?.toObjects(Purchases::class.java) ?: emptyList()
+                // Al convertir a objeto Firestore no rellena automáticamente el ID del documento en el campo 'id' de la data class.
+                // Se mapea manualmente para incluir el ID del documento.
+                val purchases = value?.documents?.mapNotNull { doc ->
+                    doc.toObject(Purchases::class.java)?.copy(id = doc.id)
+                } ?: emptyList()
                 trySend(purchases)
             }
         awaitClose { result.remove() }
@@ -57,9 +61,18 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
                     close(error)
                     return@addSnapshotListener
                 }
-                val purchase = value?.toObject(Purchases::class.java)
+                val purchase = value?.toObject(Purchases::class.java)?.copy(id = value.id)
                 trySend(purchase)
             }
         awaitClose { result.remove() }
+    }
+    //Borra una compra por su ID.
+    override suspend fun deletePurchase(purchaseId: String) {
+        try {
+            db.collection("Purchases").document(purchaseId).delete().await()
+            println("Compra eliminada OK")
+        } catch (e: Exception) {
+            println("Error al eliminar compra: $e")
+        }
     }
 }

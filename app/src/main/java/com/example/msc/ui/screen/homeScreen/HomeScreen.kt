@@ -32,9 +32,12 @@ import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
+import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
+import com.example.msc.ui.components.Buttons.DeleteButton
+import com.example.msc.ui.components.Buttons.EditButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
@@ -54,6 +57,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
     val getPurchasesShopUseCase = GetPurchasesShopUseCase(repository)
     val addPurchaseUseCase = AddPurchaseUseCase(repository)
+    val deletePurchaseUseCase = DeletePurchaseUseCase(repository)
     val getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
     val getUsernameUseCase = GetUsernameUseCase(authRepository)
 
@@ -63,6 +67,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             getPurchasesDetailUseCase,
             getPurchasesShopUseCase,
             addPurchaseUseCase,
+            deletePurchaseUseCase,
             getCurrentUserUseCase,
             getUsernameUseCase
         )
@@ -111,9 +116,14 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             ShowUser(username = uiState.username)
+            DeleteButton(
+                onClick = { viewModel.onEditClicked() },
+                modifier = Modifier
+            )
         }
 
         Text(
@@ -132,6 +142,8 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             items(uiState.purchaseDetail) { purchase ->
                 CardPurchasesHome(
                     purchases = purchase,
+                    isEditMode = uiState.isEditMode,
+                    onDelete = { viewModel.onDeletePurchase(purchase.id) },
                     onClick = { 
                         viewModel.onPurchaseClicked(purchase.id)
                     }

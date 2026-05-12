@@ -15,3 +15,5 @@ val BlueMSC = Color(0xFF7BBEFF)
 val BlueMSCborder = Color(0xFF0978FF)
 val BlueMSCerror = Color(0xD2C0D8FF)
 val DarkBlueMSC = Color(0xFF003366)
+
+val GrayMSC = Color(0xF2D3D3D3)

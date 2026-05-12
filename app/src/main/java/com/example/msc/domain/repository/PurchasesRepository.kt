@@ -9,4 +9,5 @@ interface PurchasesRepository {
     suspend fun getPurchases() : List<String>
     fun getPurchasesDetail() : Flow<List<Purchases>>
     fun getPurchaseById(purchaseId: String): Flow<Purchases?>
+    suspend fun deletePurchase(purchaseId: String)
 }
