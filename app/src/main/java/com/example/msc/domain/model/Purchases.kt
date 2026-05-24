@@ -10,6 +10,7 @@ data class Purchases(
     val shop: String = "",
     val products: List<Products> = emptyList(),
     val createdAt: Long = System.currentTimeMillis(),
+    val userId: String = "",
     val user: String = ""
 ) {
     // Calcula el precio total de la compra

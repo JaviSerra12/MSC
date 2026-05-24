@@ -37,9 +37,10 @@ class MonthlyHomeScreenVM(
     }
 
     fun getMonthlyPurchases() {
+        val userId = getCurrentUserUseCase()?.uid ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            getPurchasesDetailUseCase().collect { purchases ->
+            getPurchasesDetailUseCase(userId).collect { purchases ->
                 val monthlyData = getMonthlyExpensesUseCase(purchases)
                 _uiState.update { 
                     it.copy(

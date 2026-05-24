@@ -22,10 +22,12 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         }
     }
 
-    //Obtiene todas las compras.
-    override suspend fun getPurchases(): List<String> {
+    //Obtiene las tiendas del usuario especifico.
+    override suspend fun getPurchases(userId: String): List<String> {
         val shops = mutableListOf<String>()
-        val result = db.collection("Purchases").get().await()
+        val result = db.collection("Purchases")
+            .whereEqualTo("userId", userId)
+            .get().await()
 
         for (document in result) {
             val purchase = document.toObject(Purchases::class.java)
@@ -35,9 +37,10 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         return shops
     }
 
-    //Obtiene los detalles de todas las compras.
-    override fun getPurchasesDetail(): Flow<List<Purchases>> = callbackFlow {
+    //Obtiene los detalles de las compras del usuario especifico.
+    override fun getPurchasesDetail(userId: String): Flow<List<Purchases>> = callbackFlow {
         val result = db.collection("Purchases")
+            .whereEqualTo("userId", userId)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     close(error)

@@ -89,11 +89,13 @@ class HomeScreenVM(
 
     // Al finalizar la lista de productos, crea la compra y la guarda en la BD
     fun onConfirmAddProducts(products: List<Products>) {
+        val firebaseUser = getCurrentUserUseCase()
         val shopName = _uiState.value.tempShopName
         val newPurchase = Purchases(
             shop = shopName,
             products = products,
             createdAt = System.currentTimeMillis(),
+            userId = firebaseUser?.uid ?: "",
             user = currentUsername
         )
         
@@ -106,16 +108,18 @@ class HomeScreenVM(
 
     // Obtener las compras por tienda.
     fun getPurchasesShop() {
+        val userId = getCurrentUserUseCase()?.uid ?: return
         viewModelScope.launch {
-            val titles = getPurchasesShopUseCase()
+            val titles = getPurchasesShopUseCase(userId)
             _uiState.update { it.copy(purchaseTitles = titles) }
         }
     }
 
     // Obtener el detalle de las compras filtrado por mes.
     fun getPurchasesDetail(monthFilter: String = "") {
+        val userId = getCurrentUserUseCase()?.uid ?: return
         viewModelScope.launch {
-            getPurchasesDetailUseCase().collect { purchases ->
+            getPurchasesDetailUseCase(userId).collect { purchases ->
                 val filteredPurchases = if (monthFilter.isNotEmpty()) {
                     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
                     purchases.filter { 

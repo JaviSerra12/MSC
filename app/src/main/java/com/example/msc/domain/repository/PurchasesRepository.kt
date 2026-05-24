@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 //Interfaz que define las operaciones de acceso a datos con las compras.
 interface PurchasesRepository {
     suspend fun addPurchase(purchase: Purchases)
-    suspend fun getPurchases() : List<String>
-    fun getPurchasesDetail() : Flow<List<Purchases>>
+    suspend fun getPurchases(userId: String) : List<String>
+    fun getPurchasesDetail(userId: String) : Flow<List<Purchases>>
     fun getPurchaseById(purchaseId: String): Flow<Purchases?>
     suspend fun deletePurchase(purchaseId: String)
 }
