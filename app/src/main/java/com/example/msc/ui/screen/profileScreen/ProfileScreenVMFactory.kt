@@ -32,6 +32,6 @@ class ProfileScreenVMFactory(
                 reauthenticateUseCase
             ) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("ViewModel desconocido")
     }
 }

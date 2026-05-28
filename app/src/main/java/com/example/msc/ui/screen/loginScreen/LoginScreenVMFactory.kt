@@ -14,6 +14,6 @@ class LoginScreenVMFactory(
             @Suppress("UNCHECKED_CAST")
             return LoginScreenVM(loginUseCase) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("ViewModel desconocido")
     }
 }

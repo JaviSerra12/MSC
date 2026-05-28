@@ -24,6 +24,6 @@ class MonthlyHomeScreenVMFactory(
                 getUsernameUseCase
             ) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("ViewModel desconocido")
     }
 }

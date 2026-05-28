@@ -14,6 +14,6 @@ class RegisterScreenVMFactory(
             @Suppress("UNCHECKED_CAST")
             return RegisterScreenVM(registerUseCase) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("ViewModel desconocido")
     }
 }

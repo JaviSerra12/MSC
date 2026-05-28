@@ -13,6 +13,6 @@ class PurchasesDetailScreenVMFactory(
             @Suppress("UNCHECKED_CAST")
             return PurchasesDetailScreenVM(purchaseId, getPurchaseByIdUseCase) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("ViewModel desconocido")
     }
 }
