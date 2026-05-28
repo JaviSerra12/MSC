@@ -14,8 +14,12 @@ class GetMonthlyExpensesUseCase {
         // Da formato a System,currentTimeMillis().
         val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
 
-        // Devuelve el valor de los productos agrupados por mes.
-        return purchases.groupBy { formatter.format(Date(it.createdAt)) }
+
+        // Devuelve el valor de los productos agrupados por mes
+        return purchases
+            // Ordenamos las compras por fecha (descendente)
+            .sortedByDescending { it.createdAt }
+            .groupBy { formatter.format(Date(it.createdAt)) }
             .mapValues { (_, purchaseList) ->
                 purchaseList.sumOf { it.totalPrice }
             }

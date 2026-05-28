@@ -115,18 +115,21 @@ class HomeScreenVM(
         }
     }
 
-    // Obtener el detalle de las compras filtrado por mes.
+    // Obtener el detalle de las compras filtrado por mes y ordenado por fecha.
     fun getPurchasesDetail(monthFilter: String = "") {
         val userId = getCurrentUserUseCase()?.uid ?: return
         viewModelScope.launch {
             getPurchasesDetailUseCase(userId).collect { purchases ->
+                // Ordenar por fecha (más reciente primero)
+                val sortedPurchases = purchases.sortedByDescending { it.createdAt }
+
                 val filteredPurchases = if (monthFilter.isNotEmpty()) {
                     val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-                    purchases.filter { 
+                    sortedPurchases.filter { 
                         formatter.format(Date(it.createdAt)) == monthFilter 
                     }
                 } else {
-                    purchases
+                    sortedPurchases
                 }
                 _uiState.update { it.copy(purchaseDetail = filteredPurchases) }
             }
