@@ -16,7 +16,7 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         try {
             // .add() genera automáticamente el ID en Firestore
             db.collection("Purchases").add(purchase).await()
-            println("Compra guardada OK")
+            println("Compra guardada correctamente")
         } catch (e: Exception) {
             println("Error al guardar compra: $e")
         }
@@ -73,9 +73,18 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
     override suspend fun deletePurchase(purchaseId: String) {
         try {
             db.collection("Purchases").document(purchaseId).delete().await()
-            println("Compra eliminada OK")
+            println("Compra eliminada correctamente")
         } catch (e: Exception) {
             println("Error al eliminar compra: $e")
+        }
+    }
+    // Actualiza una compra en Firestore.
+    override suspend fun updatePurchase(purchase: Purchases) {
+        try {
+            db.collection("Purchases").document(purchase.id).set(purchase).await()
+            println("Compra actualizada correctamente")
+        } catch (e: Exception) {
+            println("Error al actualizar compra: $e")
         }
     }
 }

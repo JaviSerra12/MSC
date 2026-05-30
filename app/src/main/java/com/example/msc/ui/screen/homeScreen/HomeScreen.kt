@@ -37,9 +37,9 @@ import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
 import com.example.msc.ui.components.Buttons.DeleteButton
-import com.example.msc.ui.components.Buttons.EditButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
+import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
 import com.example.msc.ui.components.login.ShowUser
 import com.example.msc.ui.navigation.RouteGeneral
@@ -90,8 +90,8 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     if (uiState.isAddShopDialogVisible) {
         AddShopDialog(
             onDismiss = { viewModel.onDismissAddShopDialog() },
-            onConfirm = { shopName ->
-                viewModel.onConfirmShop(shopName)
+            onConfirm = { shopName, date ->
+                viewModel.onConfirmShop(shopName, date)
             }
         )
     }
@@ -104,6 +104,14 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             onConfirm = { products ->
                 viewModel.onConfirmAddProducts(products)
             }
+        )
+    }
+
+    // Dialog de confirmación para borrar
+    if (uiState.isDeleteConfirmationDialogVisible) {
+        DeleteConfirmationDialog(
+            onDismiss = { viewModel.onDismissDeleteConfirmationDialog() },
+            onConfirm = { viewModel.onConfirmDeletePurchase() }
         )
     }
 
@@ -121,7 +129,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
         ) {
             ShowUser(username = uiState.username)
             DeleteButton(
-                onClick = { viewModel.onEditClicked() },
+                onClick = { viewModel.onDeleteClicked() },
                 modifier = Modifier
             )
         }
@@ -142,7 +150,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             items(uiState.purchaseDetail) { purchase ->
                 CardPurchasesHome(
                     purchases = purchase,
-                    isEditMode = uiState.isEditMode,
+                    isEditMode = uiState.isDeleteMode,
                     onDelete = { viewModel.onDeletePurchase(purchase.id) },
                     onClick = { 
                         viewModel.onPurchaseClicked(purchase.id)

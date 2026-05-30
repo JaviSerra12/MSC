@@ -1,10 +1,12 @@
 package com.example.msc.ui.components.PopUpWindows
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -28,13 +30,21 @@ import com.example.msc.ui.theme.DarkBlueMSC
 @Composable
 fun AddProductDialog(
     shopName: String,
+    editableProducts: List<Products> = emptyList(),
+    initialEditingIndex: Int? = null,
+    editableName: String = "",
+    editablePrice: String = "",
+    editableQuantity: String = "",
     onDismiss: () -> Unit,
     onConfirm: (List<Products>) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var quantity by remember { mutableStateOf("") }
-    var productList by remember { mutableStateOf(listOf<Products>()) }
+    var newName by remember { mutableStateOf(editableName) }
+    var newPrice by remember { mutableStateOf(editablePrice) }
+    var newQuantity by remember { mutableStateOf(editableQuantity) }
+    var newProductList by remember { mutableStateOf(editableProducts) }
+
+    // Indice del producto que se está editando.
+    var editingIndex by remember { mutableStateOf<Int?>(initialEditingIndex) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -62,8 +72,8 @@ fun AddProductDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 CustomDialogTextField(
-                    value = name,
-                    onValueChange = { name = it },
+                    value = newName,
+                    onValueChange = { newName = it },
                     label = "Nombre del producto",
                     keyboardType = KeyboardType.Text
                 )
@@ -72,16 +82,16 @@ fun AddProductDialog(
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     CustomDialogTextField(
-                        value = price,
-                        onValueChange = { price = it },
+                        value = newPrice,
+                        onValueChange = { newPrice = it },
                         label = "Precio",
                         keyboardType = KeyboardType.Decimal,
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     CustomDialogTextField(
-                        value = quantity,
-                        onValueChange = { quantity = it },
+                        value = newQuantity,
+                        onValueChange = { newQuantity = it },
                         label = "Cantidad",
                         keyboardType = KeyboardType.Number,
                         modifier = Modifier.weight(1f)
@@ -92,23 +102,40 @@ fun AddProductDialog(
 
                 Button(
                     onClick = {
-                        if (name.isNotEmpty()) {
-                            val p = price.toDoubleOrNull() ?: 0.0
-                            val q = quantity.toIntOrNull() ?: 1
-                            productList = productList + Products(name, p, q)
-                            name = ""
-                            price = ""
-                            quantity = ""
+                        if (newName.isNotEmpty()) {
+                            val p = newPrice.toDoubleOrNull() ?: 0.0
+                            val q = newQuantity.toIntOrNull() ?: 1
+                            val product = Products(newName, p, q)
+                            
+                            if (editingIndex != null) {
+                                // Actualiza el producto existente
+                                val updatedList = newProductList.toMutableList()
+                                updatedList[editingIndex!!] = product
+                                newProductList = updatedList
+                                editingIndex = null // Reinicia el producto que se está editando
+                            } else {
+                                // Añadir nuevo producto
+                                newProductList = newProductList + product
+                            }
+                            
+                            // Poner los campos a su valor inicial
+                            newName = ""
+                            newPrice = ""
+                            newQuantity = ""
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = BlueMSC),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Añadir a la lista", color = Color.White, fontFamily = dosisRegular)
+                    Text(
+                        text = if (editingIndex != null) "Actualizar producto" else "Añadir a la lista",
+                        color = Color.White,
+                        fontFamily = dosisRegular
+                    )
                 }
 
-                if (productList.isNotEmpty()) {
+                if (newProductList.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Productos añadidos:",
@@ -123,18 +150,31 @@ fun AddProductDialog(
                             .heightIn(max = 200.dp)
                             .padding(vertical = 8.dp)
                     ) {
-                        items(productList) { product ->
+                        itemsIndexed(newProductList) { index, product ->
+                            val isEditing = editingIndex == index
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 2.dp),
+                                    .background(
+                                        if (isEditing) BlueMSC.copy(alpha = 0.1f) else Color.Transparent,
+                                        RoundedCornerShape(4.dp)
+                                    )
+                                    .clickable {
+                                        // Seleccionar para editar
+                                        newName = product.name
+                                        newPrice = product.price.toString()
+                                        newQuantity = product.quantity.toString()
+                                        editingIndex = index
+                                    }
+                                    .padding(vertical = 4.dp, horizontal = 4.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     text = product.name,
                                     fontFamily = dosisRegular,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    fontWeight = if (isEditing) FontWeight.Bold else FontWeight.Normal
                                 )
                                 Text(
                                     text = "${product.quantity} x ${product.price}€",
@@ -142,7 +182,23 @@ fun AddProductDialog(
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                 )
                                 IconButton(
-                                    onClick = { productList = productList - product },
+                                    onClick = {
+
+                                        // RemoveAt elimina el producto de la lista para actualizarlo.
+                                        newProductList = newProductList.toMutableList().apply { removeAt(index) }
+
+                                       // Si se borra el producto editable limpia los campos y elimina el producto de la lista.
+                                        if (editingIndex == index) {
+                                            editingIndex = null
+                                            newName = ""
+                                            newPrice = ""
+                                            newQuantity = ""
+
+                                            // Cuando se borra un producto se actualiza el index de la lista para que el producto 3 sea el 2.
+                                        } else if (editingIndex != null && editingIndex!! > index) {
+                                            editingIndex = editingIndex!! - 1
+                                        }
+                                    },
                                     modifier = Modifier.size(24.dp)
                                 ) {
                                     Icon(
@@ -168,8 +224,24 @@ fun AddProductDialog(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
-                        onClick = { onConfirm(productList) },
-                        enabled = productList.isNotEmpty(),
+                        onClick = { 
+                            var finalProducts = newProductList.toMutableList()
+                            if (newName.isNotEmpty()) {
+                                val p = newPrice.toDoubleOrNull() ?: 0.0
+                                val q = newQuantity.toIntOrNull() ?: 1
+                                val product = Products(newName, p, q)
+                                
+                                if (editingIndex != null) {
+
+                                    // Actualiza el producto existente !! hace que el indice no sea nulo.
+                                    finalProducts[editingIndex!!] = product
+                                } else {
+                                    finalProducts.add(product)
+                                }
+                            }
+                            onConfirm(finalProducts) 
+                        },
+                        enabled = newProductList.isNotEmpty() || newName.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                         shape = RoundedCornerShape(8.dp)
                     ) {

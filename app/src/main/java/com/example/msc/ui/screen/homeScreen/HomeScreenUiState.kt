@@ -8,7 +8,10 @@ data class HomeScreenUiState(
     val purchaseDetail: List<Purchases> = emptyList(),
     val isAddProductDialogVisible: Boolean = false,
     val isAddShopDialogVisible: Boolean = false,
+    val isDeleteConfirmationDialogVisible: Boolean = false,
+    val purchaseIdToDelete: String? = null,
     val tempShopName: String = "",
+    val tempPurchaseDate: Long = System.currentTimeMillis(),
     val username: String = "",
-    val isEditMode: Boolean = false
+    val isDeleteMode: Boolean = false,
 )

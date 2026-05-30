@@ -55,7 +55,7 @@ class HomeScreenVM(
 
     // Muestra todos los productos de una compra
     fun onPurchaseClicked(purchaseId: String) {
-        if (_uiState.value.isEditMode) return
+        if (_uiState.value.isDeleteMode) return
         viewModelScope.launch {
             _navigationEvent.emit(purchaseId)
         }
@@ -72,12 +72,13 @@ class HomeScreenVM(
     }
 
     // Al confirmar la tienda guarda el nombre y muestra el diálogo de productos
-    fun onConfirmShop(shopName: String) {
+    fun onConfirmShop(shopName: String, purchaseDate: Long) {
         _uiState.update { 
             it.copy(
                 isAddShopDialogVisible = false,
                 isAddProductDialogVisible = true,
-                tempShopName = shopName
+                tempShopName = shopName,
+                tempPurchaseDate = purchaseDate
             ) 
         }
     }
@@ -91,10 +92,11 @@ class HomeScreenVM(
     fun onConfirmAddProducts(products: List<Products>) {
         val firebaseUser = getCurrentUserUseCase()
         val shopName = _uiState.value.tempShopName
+        val purchaseDate = _uiState.value.tempPurchaseDate
         val newPurchase = Purchases(
             shop = shopName,
             products = products,
-            createdAt = System.currentTimeMillis(),
+            createdAt = purchaseDate,
             userId = firebaseUser?.uid ?: "",
             user = currentUsername
         )
@@ -137,14 +139,27 @@ class HomeScreenVM(
     }
 
     //Cuando se pulsa editar se cambia el estado de isEditMode a true.
-    fun onEditClicked() {
-        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
+
+    fun onDeleteClicked() {
+        _uiState.update { it.copy(isDeleteMode = !it.isDeleteMode) }
     }
 
     //Borra una compra
     fun onDeletePurchase(purchaseId: String) {
+        _uiState.update { it.copy(isDeleteConfirmationDialogVisible = true, purchaseIdToDelete = purchaseId) }
+    }
+
+    // Oculta el diálogo de confirmación
+    fun onDismissDeleteConfirmationDialog() {
+        _uiState.update { it.copy(isDeleteConfirmationDialogVisible = false, purchaseIdToDelete = null) }
+    }
+
+    // Confirma que la compra se borre
+    fun onConfirmDeletePurchase() {
+        val purchaseId = _uiState.value.purchaseIdToDelete ?: return
         viewModelScope.launch {
             deletePurchaseUseCase(purchaseId)
+            _uiState.update { it.copy(isDeleteConfirmationDialogVisible = false, purchaseIdToDelete = null) }
         }
     }
 }

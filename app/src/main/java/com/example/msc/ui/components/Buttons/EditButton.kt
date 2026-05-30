@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.GrayMSC
 
@@ -19,13 +20,17 @@ fun EditButton(onClick: () -> Unit, modifier: Modifier) {
         onClick = onClick,
         modifier = modifier,
         colors = ButtonColors(
-            containerColor = BlueMSC.copy(alpha = 0.5f),
+            containerColor = BlueMSC,
             contentColor = Color.Black,
             disabledContainerColor = BlueMSC.copy(alpha = 0.5f),
             disabledContentColor = Color.Black
         )
     ) {
-        Text("Editar")
+        TextoPrincipal(
+            texto = "Editar",
+            size = 12,
+            color = Color.Black
+        )
     }
 }
 

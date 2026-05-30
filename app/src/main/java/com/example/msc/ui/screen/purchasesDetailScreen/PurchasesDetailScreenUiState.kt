@@ -4,5 +4,9 @@ import com.example.msc.domain.model.Purchases
 
 data class PurchasesDetailScreenUiState(
     val purchase: Purchases? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isEditMode: Boolean = false,
+    val isEditDialogVisible: Boolean = false,
+    val isDeleteDialogVisible: Boolean = false,
+    val selectedProductIndex: Int? = null
 )
