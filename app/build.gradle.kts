@@ -62,6 +62,18 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
 
+    // ML KIT OCR & COROUTINES SUPPORT
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // COIL (Carga de imagenes)
+    implementation(libs.coil.compose)
+
+    // CAMERAX Accede a la camara del telefono
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

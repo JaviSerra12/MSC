@@ -1,6 +1,7 @@
 package com.example.msc.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -34,6 +35,14 @@ val menuItems = listOf(
             it.navigate(RouteGeneral.MonthlyHomeScreen.route)
         },
         contentDescription = "Inicio"
+    ),
+    MenuItem(
+        title = "Tickets",
+        icon = Icons.Default.Create,
+        navigate = {
+            it.navigate(RouteGeneral.ScanScreen.route)
+        },
+        contentDescription = "Tickets"
     ),
     MenuItem(
         title = "Compras",

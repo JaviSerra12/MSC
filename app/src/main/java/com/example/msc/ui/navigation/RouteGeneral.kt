@@ -18,4 +18,6 @@ sealed class RouteGeneral(val route : String) {
     }
 
     object ProfileScreen : RouteGeneral("Profile")
+
+    object ScanScreen : RouteGeneral("Scan")
 }
