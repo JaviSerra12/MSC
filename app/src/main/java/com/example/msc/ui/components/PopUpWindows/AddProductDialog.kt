@@ -104,7 +104,7 @@ fun AddProductDialog(
                     onClick = {
                         if (newName.isNotEmpty()) {
                             val p = newPrice.toDoubleOrNull() ?: 0.0
-                            val q = newQuantity.toIntOrNull() ?: 1
+                            val q = newQuantity.toDoubleOrNull() ?: 1.0
                             val product = Products(newName, p, q)
                             
                             if (editingIndex != null) {
@@ -228,7 +228,7 @@ fun AddProductDialog(
                             var finalProducts = newProductList.toMutableList()
                             if (newName.isNotEmpty()) {
                                 val p = newPrice.toDoubleOrNull() ?: 0.0
-                                val q = newQuantity.toIntOrNull() ?: 1
+                                val q = newQuantity.toDoubleOrNull() ?: 1.0
                                 val product = Products(newName, p, q)
                                 
                                 if (editingIndex != null) {
