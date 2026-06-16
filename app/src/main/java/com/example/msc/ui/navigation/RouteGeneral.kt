@@ -20,4 +20,8 @@ sealed class RouteGeneral(val route : String) {
     object ProfileScreen : RouteGeneral("Profile")
 
     object ScanScreen : RouteGeneral("Scan")
+
+    object FamilyGroupScreen : RouteGeneral("FamilyGroup/{familyGroupId}") {
+        fun createRoute(familyGroupId: String) = "FamilyGroup/$familyGroupId"
+    }
 }

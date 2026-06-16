@@ -26,9 +26,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseAuthRepository
+import com.example.msc.data.repository.FirebaseFamilyRepository
 import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.ui.components.Cards.CardMonthlyHome
@@ -43,12 +45,14 @@ fun MonthlyHomeScreen(navController: NavHostController) {
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
     val authRepository = FirebaseAuthRepository()
+    val familyRepository = FirebaseFamilyRepository(db)
     
     // Casos de Uso
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
     val getMonthlyExpensesUseCase = GetMonthlyExpensesUseCase()
     val getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
     val getUsernameUseCase = GetUsernameUseCase(authRepository)
+    val getFamilyGroupUseCase = GetFamilyGroupUseCase(familyRepository)
 
     //Logica de la pantalla.
     val viewModel : MonthlyHomeScreenVM = viewModel(
@@ -56,7 +60,8 @@ fun MonthlyHomeScreen(navController: NavHostController) {
             getPurchasesDetailUseCase, 
             getMonthlyExpensesUseCase,
             getCurrentUserUseCase,
-            getUsernameUseCase
+            getUsernameUseCase,
+            getFamilyGroupUseCase
         )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

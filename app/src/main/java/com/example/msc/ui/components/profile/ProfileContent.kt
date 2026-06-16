@@ -28,13 +28,16 @@ fun ProfileContent(
     onLogoutClick: () -> Unit,
     onUpdateUsername: (String) -> Unit,
     onUpdateEmail: (String) -> Unit,
-    onUpdatePassword: (String, String, String, (Result<Unit>) -> Unit) -> Unit
+    onUpdatePassword: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
+    onCreateFamilyGroup: (String) -> Unit,
+    onManageFamilyGroup: () -> Unit
 ) {
     val context = LocalContext.current
 
     var showEditUsername by remember { mutableStateOf(false) }
     var showEditEmail by remember { mutableStateOf(false) }
     var showEditPassword by remember { mutableStateOf(false) }
+    var showCreateFamilyDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -87,6 +90,38 @@ fun ProfileContent(
                     onClick = { showEditPassword = true }
                 )
             }
+
+            item {
+                Text(
+                    text = "Grupo Familiar",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = dosisRegular,
+                    color = BlueMSC
+                )
+            }
+
+            item {
+                if (uiState.familyGroupId == null) {
+                    CustomItem(
+                        text = "Crear Grupo Familiar",
+                        description = "Crea un grupo para compartir tus compras",
+                        onClick = { showCreateFamilyDialog = true }
+                    )
+                } else {
+                    CustomItem(
+                        text = uiState.familyGroupName ?: "Mi Familia",
+                        description = "Gestionar miembros y ajustes del grupo",
+                        onClick = onManageFamilyGroup
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             item {
                 CustomItem(
                     text = "Cerrar sesión",
@@ -135,6 +170,18 @@ fun ProfileContent(
                         Toast.makeText(context, result.exceptionOrNull()?.message ?: "Error", Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+        )
+    }
+
+    if (showCreateFamilyDialog) {
+        EditFieldDialog(
+            title = "Nombre del grupo",
+            initialValue = "Familia de ${uiState.username}",
+            onDismiss = { showCreateFamilyDialog = false },
+            onConfirm = { name ->
+                onCreateFamilyGroup(name)
+                showCreateFamilyDialog = false
             }
         )
     }

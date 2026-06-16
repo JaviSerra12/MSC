@@ -28,6 +28,7 @@ import com.example.msc.ui.screen.scanScreen.ScanScreen
 import com.example.msc.ui.screen.scanScreen.ScanScreenVM
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.msc.ui.screen.scanScreen.ScanScreenVMFactory
+import com.example.msc.ui.screen.profileScreen.familyGroup.FamilyGroupScreen
 
 @Composable
 fun MainScreen(rootNavController: NavHostController) {
@@ -44,6 +45,7 @@ fun MainScreen(rootNavController: NavHostController) {
                 route?.startsWith(RouteGeneral.ScanScreen.route) == true -> 1
                 route?.startsWith("Home") == true -> 2 
                 route?.startsWith(RouteGeneral.ProfileScreen.route) == true -> 3
+                route?.startsWith("FamilyGroup") == true -> 3
                 else -> indexSelected
             }
         }
@@ -99,6 +101,13 @@ fun MainScreen(rootNavController: NavHostController) {
                 route = RouteGeneral.ProfileScreen.route
             ) {
                 ProfileScreen(navController = bottomNavController)
+            }
+            composable(
+                route = RouteGeneral.FamilyGroupScreen.route,
+                arguments = listOf(navArgument("familyGroupId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val familyGroupId = backStackEntry.arguments?.getString("familyGroupId") ?: ""
+                FamilyGroupScreen(navController = bottomNavController, familyGroupId = familyGroupId)
             }
         }
     }

@@ -6,6 +6,7 @@ import com.example.msc.domain.model.Purchases
 import com.example.msc.domain.model.Products
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
@@ -26,7 +27,8 @@ class HomeScreenVM(
     private val addPurchaseUseCase: AddPurchaseUseCase,
     private val deletePurchaseUseCase: DeletePurchaseUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getUsernameUseCase: GetUsernameUseCase
+    private val getUsernameUseCase: GetUsernameUseCase,
+    private val getFamilyGroupUseCase: GetFamilyGroupUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeScreenUiState())
@@ -37,6 +39,7 @@ class HomeScreenVM(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     private var currentUsername: String = ""
+    private var currentUserIds: List<String> = emptyList()
 
     init {
         loadUserData()
@@ -48,7 +51,20 @@ class HomeScreenVM(
             viewModelScope.launch {
                 val userData = getUsernameUseCase(user.uid)
                 currentUsername = userData?.username ?: user.displayName ?: "User"
+                
+                val userIds = mutableListOf(user.uid)
+                userData?.familyGroupId?.let { groupId ->
+                    val familyGroup = getFamilyGroupUseCase(groupId)
+                    familyGroup?.members?.let { members ->
+                        userIds.addAll(members.filter { it != user.uid })
+                    }
+                }
+                currentUserIds = userIds
+                
                 _uiState.update { it.copy(username = currentUsername) }
+
+                getPurchasesShop()
+                getPurchasesDetail()
             }
         }
     }
@@ -110,19 +126,18 @@ class HomeScreenVM(
 
     // Obtener las compras por tienda.
     fun getPurchasesShop() {
-        val userId = getCurrentUserUseCase()?.uid ?: return
+        if (currentUserIds.isEmpty()) return
         viewModelScope.launch {
-            val titles = getPurchasesShopUseCase(userId)
+            val titles = getPurchasesShopUseCase(currentUserIds)
             _uiState.update { it.copy(purchaseTitles = titles) }
         }
     }
 
     // Obtener el detalle de las compras filtrado por mes y ordenado por fecha.
     fun getPurchasesDetail(monthFilter: String = "") {
-        val userId = getCurrentUserUseCase()?.uid ?: return
+        if (currentUserIds.isEmpty()) return
         viewModelScope.launch {
-            getPurchasesDetailUseCase(userId).collect { purchases ->
-                // Ordenar por fecha (más reciente primero)
+            getPurchasesDetailUseCase(currentUserIds).collect { purchases ->
                 val sortedPurchases = purchases.sortedByDescending { it.createdAt }
 
                 val filteredPurchases = if (monthFilter.isNotEmpty()) {

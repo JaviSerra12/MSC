@@ -9,6 +9,8 @@ import com.example.msc.domain.usecase.auth.ReauthenticateUseCase
 import com.example.msc.domain.usecase.auth.UpdateEmailUseCase
 import com.example.msc.domain.usecase.auth.UpdatePasswordUseCase
 import com.example.msc.domain.usecase.auth.UpdateUsernameUseCase
+import com.example.msc.domain.usecase.family.CreateFamilyGroupUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 
 class ProfileScreenVMFactory(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
@@ -17,7 +19,9 @@ class ProfileScreenVMFactory(
     private val updateUsernameUseCase: UpdateUsernameUseCase,
     private val updateEmailUseCase: UpdateEmailUseCase,
     private val updatePasswordUseCase: UpdatePasswordUseCase,
-    private val reauthenticateUseCase: ReauthenticateUseCase
+    private val reauthenticateUseCase: ReauthenticateUseCase,
+    private val getFamilyGroupUseCase: GetFamilyGroupUseCase,
+    private val createFamilyGroupUseCase: CreateFamilyGroupUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileScreenVM::class.java)) {
@@ -29,7 +33,9 @@ class ProfileScreenVMFactory(
                 updateUsernameUseCase,
                 updateEmailUseCase,
                 updatePasswordUseCase,
-                reauthenticateUseCase
+                reauthenticateUseCase,
+                getFamilyGroupUseCase,
+                createFamilyGroupUseCase
             ) as T
         }
         throw IllegalArgumentException("ViewModel desconocido")

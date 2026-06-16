@@ -28,15 +28,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseAuthRepository
+import com.example.msc.data.repository.FirebaseFamilyRepository
 import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesShopUseCase
+import com.example.msc.ui.components.Buttons.ActionItem
+import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
-import com.example.msc.ui.components.Buttons.DeleteButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
 import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
@@ -52,6 +55,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     val db = databaseProvider.getDb()
     val repository = FirebaseNoteRepository(db)
     val authRepository = FirebaseAuthRepository()
+    val familyRepository = FirebaseFamilyRepository(db)
 
     // UseCase de la pantalla.
     val getPurchasesDetailUseCase = GetPurchasesDetailUseCase(repository)
@@ -60,6 +64,7 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
     val deletePurchaseUseCase = DeletePurchaseUseCase(repository)
     val getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
     val getUsernameUseCase = GetUsernameUseCase(authRepository)
+    val getFamilyGroupUseCase = GetFamilyGroupUseCase(familyRepository)
 
     //Logica de la pantalla.
     val viewModel : HomeScreenVM = viewModel(
@@ -69,7 +74,8 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             addPurchaseUseCase,
             deletePurchaseUseCase,
             getCurrentUserUseCase,
-            getUsernameUseCase
+            getUsernameUseCase,
+            getFamilyGroupUseCase
         )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -128,9 +134,10 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
             verticalAlignment = Alignment.CenterVertically
         ) {
             ShowUser(username = uiState.username)
-            DeleteButton(
-                onClick = { viewModel.onDeleteClicked() },
-                modifier = Modifier
+            ActionsDropdown(
+                actions = listOf(
+                    ActionItem(label = "Borrar") { viewModel.onDeleteClicked() }
+                )
             )
         }
 

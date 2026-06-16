@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,14 +16,14 @@ class MonthlyHomeScreenVM(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
     private val getMonthlyExpensesUseCase: GetMonthlyExpensesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getUsernameUseCase: GetUsernameUseCase
+    private val getUsernameUseCase: GetUsernameUseCase,
+    private val getFamilyGroupUseCase: GetFamilyGroupUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MonthlyHomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
         loadUserData()
-        getMonthlyPurchases()
     }
 
     private fun loadUserData() {
@@ -32,15 +33,23 @@ class MonthlyHomeScreenVM(
                 val userData = getUsernameUseCase(user.uid)
                 val currentUsername = userData?.username ?: user.displayName ?: "User"
                 _uiState.update { it.copy(username = currentUsername) }
+
+                val userIds = mutableListOf(user.uid)
+                userData?.familyGroupId?.let { groupId ->
+                    val familyGroup = getFamilyGroupUseCase(groupId)
+                    familyGroup?.members?.let { members ->
+                        userIds.addAll(members.filter { it != user.uid })
+                    }
+                }
+                getMonthlyPurchases(userIds)
             }
         }
     }
 
-    fun getMonthlyPurchases() {
-        val userId = getCurrentUserUseCase()?.uid ?: return
+    private fun getMonthlyPurchases(userIds: List<String>) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            getPurchasesDetailUseCase(userId).collect { purchases ->
+            getPurchasesDetailUseCase(userIds).collect { purchases ->
                 val monthlyData = getMonthlyExpensesUseCase(purchases)
                 _uiState.update { 
                     it.copy(

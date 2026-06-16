@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import com.example.msc.domain.usecase.purchases.GetMonthlyExpensesUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchasesDetailUseCase
 
@@ -11,7 +12,8 @@ class MonthlyHomeScreenVMFactory(
     private val getPurchasesDetailUseCase: GetPurchasesDetailUseCase,
     private val getMonthlyExpensesUseCase: GetMonthlyExpensesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getUsernameUseCase: GetUsernameUseCase
+    private val getUsernameUseCase: GetUsernameUseCase,
+    private val getFamilyGroupUseCase: GetFamilyGroupUseCase
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -21,7 +23,8 @@ class MonthlyHomeScreenVMFactory(
                 getPurchasesDetailUseCase, 
                 getMonthlyExpensesUseCase,
                 getCurrentUserUseCase,
-                getUsernameUseCase
+                getUsernameUseCase,
+                getFamilyGroupUseCase
             ) as T
         }
         throw IllegalArgumentException("ViewModel desconocido")

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 //Muestra los detalles de una compra.
 class GetPurchasesDetailUseCase(private val repository: PurchasesRepository) {
-    operator fun invoke(userId: String): Flow<List<Purchases>> {
-        return repository.getPurchasesDetail(userId)
+    operator fun invoke(userIds: List<String>): Flow<List<Purchases>> {
+        return repository.getPurchasesDetail(userIds)
     }
 }

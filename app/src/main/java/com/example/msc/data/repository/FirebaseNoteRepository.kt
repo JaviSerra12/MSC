@@ -2,10 +2,12 @@ package com.example.msc.data.repository
 
 import com.example.msc.domain.model.Purchases
 import com.example.msc.domain.repository.PurchasesRepository
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.tasks.await
 
 //Implementa PurchasesRepository utilizando Firestore.
@@ -22,11 +24,12 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         }
     }
 
-    //Obtiene las tiendas del usuario especifico.
-    override suspend fun getPurchases(userId: String): List<String> {
+    //Obtiene las tiendas de los usuarios especificos.
+    override suspend fun getPurchases(userIds: List<String>): List<String> {
+        if (userIds.isEmpty()) return emptyList()
         val shops = mutableListOf<String>()
         val result = db.collection("Purchases")
-            .whereEqualTo("userId", userId)
+            .whereIn("userId", userIds)
             .get().await()
 
         for (document in result) {
@@ -37,10 +40,16 @@ class FirebaseNoteRepository(private val db: FirebaseFirestore) : PurchasesRepos
         return shops
     }
 
-    //Obtiene los detalles de las compras del usuario especifico.
-    override fun getPurchasesDetail(userId: String): Flow<List<Purchases>> = callbackFlow {
+    //Obtiene los detalles de las compras de los usuarios especificos.
+    override fun getPurchasesDetail(userIds: List<String>): Flow<List<Purchases>> = callbackFlow {
+        if (userIds.isEmpty()) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        
         val result = db.collection("Purchases")
-            .whereEqualTo("userId", userId)
+            .whereIn("userId", userIds)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     close(error)

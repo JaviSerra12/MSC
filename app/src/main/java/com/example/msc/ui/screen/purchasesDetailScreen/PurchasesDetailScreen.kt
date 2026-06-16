@@ -31,8 +31,8 @@ import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.domain.usecase.purchases.DeletePurchaseUseCase
 import com.example.msc.domain.usecase.purchases.GetPurchaseByIdUseCase
 import com.example.msc.domain.usecase.purchases.UpdatePurchaseUseCase
-import com.example.msc.ui.components.Buttons.DeleteButton
-import com.example.msc.ui.components.Buttons.EditButton
+import com.example.msc.ui.components.Buttons.ActionItem
+import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
 import com.example.msc.ui.components.Text.TextoPrincipal
@@ -126,16 +126,13 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
                     TextoSecundario(texto = dateStr, size = 12, color = Color.Black, modifier = Modifier.padding(top = 10.dp))
                     TextoSecundario(texto = purchase.shop, size = 32, color = Color.Black)
                     
-                    Row {
-                        DeleteButton(
-                            onClick = { viewModel.onDeleteClicked() },
-                            modifier = Modifier.padding(top = 10.dp, end = 4.dp)
-                        )
-                        EditButton(
-                            onClick = { viewModel.onEditClicked() },
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
-                    }
+                    ActionsDropdown(
+                        actions = listOf(
+                            ActionItem(label = "Editar") { viewModel.onEditClicked() },
+                            ActionItem(label = "Borrar") { viewModel.onDeleteClicked() }
+                        ),
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

@@ -9,6 +9,8 @@ import com.example.msc.domain.usecase.auth.ReauthenticateUseCase
 import com.example.msc.domain.usecase.auth.UpdateEmailUseCase
 import com.example.msc.domain.usecase.auth.UpdatePasswordUseCase
 import com.example.msc.domain.usecase.auth.UpdateUsernameUseCase
+import com.example.msc.domain.usecase.family.CreateFamilyGroupUseCase
+import com.example.msc.domain.usecase.family.GetFamilyGroupUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,7 +23,9 @@ class ProfileScreenVM(
     private val updateUsernameUseCase: UpdateUsernameUseCase,
     private val updateEmailUseCase: UpdateEmailUseCase,
     private val updatePasswordUseCase: UpdatePasswordUseCase,
-    private val reauthenticateUseCase: ReauthenticateUseCase
+    private val reauthenticateUseCase: ReauthenticateUseCase,
+    private val getFamilyGroupUseCase: GetFamilyGroupUseCase,
+    private val createFamilyGroupUseCase: CreateFamilyGroupUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileScreenUiState())
@@ -31,18 +35,43 @@ class ProfileScreenVM(
         loadUserData()
     }
 
-    private fun loadUserData() {
+    fun loadUserData() {
         val firebaseUser = getCurrentUserUseCase()
         firebaseUser?.let { user ->
             _uiState.update { it.copy(email = user.email ?: "", isLoading = true) }
             viewModelScope.launch {
                 val userData = getUsernameUseCase(user.uid)
+                val username = userData?.username ?: user.displayName ?: "User"
+                val familyGroupId = userData?.familyGroupId
+                
                 _uiState.update { 
                     it.copy(
-                        username = userData?.username ?: user.displayName ?: "User",
+                        username = username,
+                        familyGroupId = familyGroupId,
                         isLoading = false
                     ) 
                 }
+
+                if (familyGroupId != null) {
+                    loadFamilyData(familyGroupId)
+                } else {
+                    _uiState.update { it.copy(familyGroupName = null, familyMembers = emptyList()) }
+                }
+            }
+        }
+    }
+
+    private suspend fun loadFamilyData(familyGroupId: String) {
+        val group = getFamilyGroupUseCase(familyGroupId)
+        group?.let { familyGroup ->
+            val memberNames = familyGroup.members.map { uid ->
+                getUsernameUseCase(uid)?.username ?: "Usuario desconocido"
+            }
+            _uiState.update { 
+                it.copy(
+                    familyGroupName = familyGroup.name,
+                    familyMembers = memberNames
+                ) 
             }
         }
     }
@@ -94,6 +123,22 @@ class ProfileScreenVM(
                 _uiState.update { it.copy(isLoading = false) }
                 onResult(Result.failure(Exception("La contraseña actual es incorrecta")))
             }
+        }
+    }
+
+    fun createFamilyGroup(name: String, onResult: (Result<String>) -> Unit) {
+        val adminId = getCurrentUserUseCase()?.uid ?: run {
+            onResult(Result.failure(Exception("Usuario no autenticado")))
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val result = createFamilyGroupUseCase(name, adminId)
+            if (result.isSuccess) {
+                loadUserData()
+            }
+            _uiState.update { it.copy(isLoading = false) }
+            onResult(result)
         }
     }
 }
