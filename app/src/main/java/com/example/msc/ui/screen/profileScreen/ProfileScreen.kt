@@ -14,7 +14,10 @@ import com.example.msc.ui.navigation.RouteGeneral
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
+fun ProfileScreen(
+    navController: NavHostController,
+    onLogout: () -> Unit
+) {
 
     val db = FirebaseFirestore.getInstance()
     val authRepository = FirebaseAuthRepository()
@@ -48,12 +51,10 @@ fun ProfileScreen(navController: NavHostController) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Navegación automática al cerrar sesión
+    // Navegación automática al cerrar sesión usando el callback
     LaunchedEffect(uiState.isLoggedOut) {
         if (uiState.isLoggedOut) {
-            navController.navigate(RouteGeneral.LoginScreen.route) {
-                popUpTo(0) { inclusive = true }
-            }
+            onLogout()
         }
     }
 

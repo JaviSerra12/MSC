@@ -100,7 +100,14 @@ fun MainScreen(rootNavController: NavHostController) {
             composable(
                 route = RouteGeneral.ProfileScreen.route
             ) {
-                ProfileScreen(navController = bottomNavController)
+                ProfileScreen(
+                    navController = bottomNavController,
+                    onLogout = {
+                        rootNavController.navigate(RouteGeneral.LoginScreen.route) {
+                            popUpTo(RouteGeneral.MainScreen.route) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable(
                 route = RouteGeneral.FamilyGroupScreen.route,
