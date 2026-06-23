@@ -70,6 +70,8 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
 
     if (uiState.isDeleteDialogVisible) {
         DeleteConfirmationDialog(
+            title = "¿Eliminar grupo?",
+            text = "¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.",
             onDismiss = { viewModel.onDismissDeleteDialog() },
             onConfirm = { viewModel.onConfirmDelete() }
         )

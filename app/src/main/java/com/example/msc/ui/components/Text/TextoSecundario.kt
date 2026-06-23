@@ -6,24 +6,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.msc.R
 import com.example.msc.ui.theme.BlueMSC
 
-
 val dosisRegular = FontFamily(Font(R.font.dosis_regular))
-@Composable
-fun TextoSecundario(modifier: Modifier = Modifier, texto: String, size: Int, color: Color){
 
+@Composable
+fun TextoSecundario(
+    texto: String,
+    size: Int,
+    color: Color,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign? = null,
+    fontStyle: FontStyle? = null
+) {
     Text(
         modifier = modifier,
         text = texto,
         fontSize = size.sp,
         color = color,
-        fontFamily = dosisRegular
+        fontFamily = dosisRegular,
+        textAlign = textAlign,
+        fontStyle = fontStyle
     )
-
 }
 
 @Preview

@@ -16,6 +16,10 @@ import com.example.msc.ui.components.Text.dosisRegular
 
 @Composable
 fun DeleteConfirmationDialog(
+    title: String = "¿Eliminar compra?",
+    text: String = "¿Estás seguro de que quieres eliminar esta compra? Esta acción no se puede deshacer.",
+    confirmButtonText: String = "Eliminar",
+    confirmButtonColor: Color = Color.Red,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -35,17 +39,17 @@ fun DeleteConfirmationDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "¿Eliminar compra?",
+                    text = title,
                     fontFamily = dosisRegular,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Red
+                    color = if (confirmButtonColor == Color.Red) Color.Red else Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "¿Estás seguro de que quieres eliminar esta compra? Esta acción no se puede deshacer.",
+                    text = text,
                     fontFamily = dosisRegular,
                     fontSize = 16.sp,
                     color = Color.DarkGray,
@@ -64,10 +68,10 @@ fun DeleteConfirmationDialog(
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = onConfirm,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        colors = ButtonDefaults.buttonColors(containerColor = confirmButtonColor),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Eliminar", color = Color.White, fontFamily = dosisRegular)
+                        Text(confirmButtonText, color = Color.White, fontFamily = dosisRegular)
                     }
                 }
             }

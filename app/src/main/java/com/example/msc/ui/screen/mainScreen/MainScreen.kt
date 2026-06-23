@@ -10,25 +10,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.msc.data.remote.database.FirebaseDatabaseProvider
+import com.example.msc.data.repository.FirebaseAuthRepository
+import com.example.msc.data.repository.FirebaseNoteRepository
 import com.example.msc.data.repository.MLKitScanRepository
+import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.msc.domain.usecase.auth.GetUsernameUseCase
+import com.example.msc.domain.usecase.purchases.AddPurchaseUseCase
 import com.example.msc.domain.usecase.purchases.ScanPurchaseUseCase
 import com.example.msc.ui.navigation.CustomBottomBar
 import com.example.msc.ui.navigation.RouteGeneral
 import com.example.msc.ui.screen.homeScreen.HomeScreen
 import com.example.msc.ui.screen.monthlyHomeScreen.MonthlyHomeScreen
 import com.example.msc.ui.screen.profileScreen.ProfileScreen
+import com.example.msc.ui.screen.profileScreen.familyGroup.FamilyGroupScreen
 import com.example.msc.ui.screen.purchasesDetailScreen.PurchasesDetailScreen
 import com.example.msc.ui.screen.scanScreen.ScanScreen
 import com.example.msc.ui.screen.scanScreen.ScanScreenVM
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.msc.ui.screen.scanScreen.ScanScreenVMFactory
-import com.example.msc.ui.screen.profileScreen.familyGroup.FamilyGroupScreen
 
 @Composable
 fun MainScreen(rootNavController: NavHostController) {
@@ -70,11 +76,25 @@ fun MainScreen(rootNavController: NavHostController) {
             }
             
             composable(RouteGeneral.ScanScreen.route) {
-                // Dependencias necesarias
+                // Dependencias necesarias para el escaneo y guardado
+                val databaseProvider = remember { FirebaseDatabaseProvider() }
+                val db = remember { databaseProvider.getDb() }
+                val noteRepository = remember { FirebaseNoteRepository(db) }
+                val authRepository = remember { FirebaseAuthRepository() }
                 val scanRepository = remember { MLKitScanRepository(context) }
+
                 val scanPurchaseUseCase = remember { ScanPurchaseUseCase(scanRepository) }
+                val addPurchaseUseCase = remember { AddPurchaseUseCase(noteRepository) }
+                val getCurrentUserUseCase = remember { GetCurrentUserUseCase(authRepository) }
+                val getUsernameUseCase = remember { GetUsernameUseCase(authRepository) }
+
                 val scanViewModel: ScanScreenVM = viewModel(
-                    factory = ScanScreenVMFactory(scanPurchaseUseCase)
+                    factory = ScanScreenVMFactory(
+                        scanPurchaseUseCase,
+                        addPurchaseUseCase,
+                        getCurrentUserUseCase,
+                        getUsernameUseCase
+                    )
                 )
                 ScanScreen(viewModel = scanViewModel)
             }

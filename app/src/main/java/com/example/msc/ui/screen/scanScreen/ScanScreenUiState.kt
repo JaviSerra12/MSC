@@ -21,5 +21,19 @@ data class ScanScreenUiState(
     val selectedPattern: ParsingPattern = ParsingPattern.AUTOMATIC,
 
     // rawScannedText contiene el texto sin procesar
-    val rawScannedText: String? = null
+    val rawScannedText: String? = null,
+
+    // Crea la compra despues del escaneo
+    val isAddShopDialogVisible: Boolean = false,
+    val tempShopName: String = "",
+    val tempPurchaseDate: Long = System.currentTimeMillis(),
+    val username: String = "",
+    
+    // Edita y confirma la compra
+    val isEditMode: Boolean = false,
+    val isEditDialogVisible: Boolean = false,
+    val selectedProductIndex: Int? = null,
+    val isCancelConfirmationVisible: Boolean = false,
+    val isStructureDropdownVisible: Boolean = false,
+    val hasScanned: Boolean = false
 )

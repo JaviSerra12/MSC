@@ -1,5 +1,6 @@
 package com.example.msc.ui.components.Cards
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,9 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -18,6 +21,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +35,9 @@ fun CardPurchasesHome(
     onDelete: () -> Unit = {},
     onClick: () -> Unit
 ) {
+    val topBackgroundColor = if (isEditMode) BlueMSC.copy(alpha = 0.6f) else BlueMSC
+    val bottomBackgroundColor = if (isEditMode) Color.LightGray.copy(alpha = 0.3f) else Color.White
+
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -44,9 +51,9 @@ fun CardPurchasesHome(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                 colors = CardColors(
-                    containerColor = BlueMSC,
+                    containerColor = topBackgroundColor,
                     contentColor = Color.White,
-                    disabledContainerColor = BlueMSC,
+                    disabledContainerColor = topBackgroundColor,
                     disabledContentColor = Color.White
                 ),
             ) {
@@ -72,10 +79,10 @@ fun CardPurchasesHome(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
                 colors = CardColors(
-                    containerColor = Color.White,
-                    contentColor = Color.White,
-                    disabledContainerColor = BlueMSC,
-                    disabledContentColor = Color.White
+                    containerColor = bottomBackgroundColor,
+                    contentColor = Color.Black,
+                    disabledContainerColor = bottomBackgroundColor,
+                    disabledContentColor = Color.Black
                 ),
             ) {
                 Column(
@@ -105,14 +112,22 @@ fun CardPurchasesHome(
                     .padding(start = 8.dp)
                     .size(32.dp),
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = Color.Black
+                    contentColor = Color.White
                 )
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Eliminar compra",
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Eliminar compra",
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
