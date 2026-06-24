@@ -42,26 +42,23 @@ class ScanScreenVM(
         }
     }
 
-    fun onImageSelected(uri: Uri) {
+    fun onImageSelected(uri: Uri, useAi: Boolean = false) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, products = emptyList(), errorMessage = null, hasScanned = false) }
-            val result = scanPurchaseUseCase(uri)
+            val result = scanPurchaseUseCase(uri, useAi)
 
-            // Si el texto se procesa correctamente se actualiza el estado de la vista
             result.onSuccess { text ->
-                processScannedText(text, _uiState.value.selectedPattern)
+                // Si usamos IA, forzamos el patrón QTY_NAME_PRICE que es el que pedimos en el prompt
+                val pattern = if (useAi) ParsingPattern.QTY_NAME_PRICE else _uiState.value.selectedPattern
+                processScannedText(text, pattern)
             }.onFailure { error ->
                 _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
             }
         }
     }
 
-
-    // Procesa el texto y actualiza el estado de la vista
     private fun processScannedText(text: String, pattern: ParsingPattern) {
         val lines = text.split("\n").map { it.trim() }.filter { it.isNotBlank() }
-
-        // Parse sirve para analizar el texto y devolver una lista de productos
         val parsedProducts = genericTemplate.parseWithPattern(lines, pattern)
 
         _uiState.update { it.copy(
@@ -69,11 +66,11 @@ class ScanScreenVM(
             products = parsedProducts,
             rawScannedText = text,
             isAddShopDialogVisible = parsedProducts.isNotEmpty(),
-            hasScanned = parsedProducts.isNotEmpty()
+            hasScanned = parsedProducts.isNotEmpty(),
+            selectedPattern = pattern
         ) }
     }
 
-    // Cambia el patron de analisis de texto
     fun onPatternChanged(pattern: ParsingPattern) {
         _uiState.update { it.copy(selectedPattern = pattern, isStructureDropdownVisible = false) }
         val rawText = _uiState.value.rawScannedText

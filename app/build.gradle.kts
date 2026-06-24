@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +21,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Leer API Key de local.properties
+        val properties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+        buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY")}\"")
     }
 
     buildTypes {
@@ -37,6 +47,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -62,9 +73,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
 
-    // ML KIT OCR & COROUTINES SUPPORT
+    // ML KIT OCR & COROUTINES SUPPORT (Se puede mantener o quitar, pero el usuario pidió usar Gemini)
     implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation(libs.kotlinx.coroutines.play.services)
+
+    // GEMINI SDK
+    implementation(libs.google.generativeai)
 
     // COIL (Carga de imagenes)
     implementation(libs.coil.compose)

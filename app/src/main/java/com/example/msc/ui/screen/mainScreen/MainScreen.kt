@@ -20,6 +20,8 @@ import androidx.navigation.navArgument
 import com.example.msc.data.remote.database.FirebaseDatabaseProvider
 import com.example.msc.data.repository.FirebaseAuthRepository
 import com.example.msc.data.repository.FirebaseNoteRepository
+import com.example.msc.data.repository.GeminiScanRepository
+import com.example.msc.data.repository.HybridScanRepository
 import com.example.msc.data.repository.MLKitScanRepository
 import com.example.msc.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.msc.domain.usecase.auth.GetUsernameUseCase
@@ -81,7 +83,13 @@ fun MainScreen(rootNavController: NavHostController) {
                 val db = remember { databaseProvider.getDb() }
                 val noteRepository = remember { FirebaseNoteRepository(db) }
                 val authRepository = remember { FirebaseAuthRepository() }
-                val scanRepository = remember { MLKitScanRepository(context) }
+
+                val scanRepository = remember { 
+                    HybridScanRepository(
+                        mlKitRepo = MLKitScanRepository(context),
+                        geminiRepo = GeminiScanRepository(context)
+                    )
+                }
 
                 val scanPurchaseUseCase = remember { ScanPurchaseUseCase(scanRepository) }
                 val addPurchaseUseCase = remember { AddPurchaseUseCase(noteRepository) }

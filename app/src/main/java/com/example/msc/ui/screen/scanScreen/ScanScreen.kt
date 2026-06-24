@@ -63,12 +63,21 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
     // URI temporal para la foto de la camara
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
+    // Estado para saber si la foto capturada debe procesarse con IA
+    var isCameraAiMode by remember { mutableStateOf(false) }
 
     // Launcher para la galeria
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        uri?.let { viewModel.onImageSelected(it) }
+        uri?.let { viewModel.onImageSelected(it, useAi = false) }
+    }
+
+    // Launcher para la galeria con IA
+    val aiGalleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.onImageSelected(it, useAi = true) }
     }
 
     // Launcher para la camara
@@ -76,7 +85,7 @@ fun ScanScreen(viewModel: ScanScreenVM) {
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            tempImageUri?.let { viewModel.onImageSelected(it) }
+            tempImageUri?.let { viewModel.onImageSelected(it, useAi = isCameraAiMode) }
         }
     }
 
@@ -90,6 +99,18 @@ fun ScanScreen(viewModel: ScanScreenVM) {
             cameraLauncher.launch(uri)
         } else {
             Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val launchCamera = { useAi: Boolean ->
+        isCameraAiMode = useAi
+        val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+            val uri = FileUtils.createTempPictureUri(context)
+            tempImageUri = uri
+            cameraLauncher.launch(uri)
+        } else {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -183,17 +204,9 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
             ScanningButtons(
                 onGalleryClick = { galleryLauncher.launch("image/*") },
-                onCameraClick = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                        val uri = FileUtils.createTempPictureUri(context)
-                        tempImageUri = uri
-                        cameraLauncher.launch(uri)
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                }
+                onCameraClick = { launchCamera(false) },
+                onAiGalleryClick = { aiGalleryLauncher.launch("image/*") },
+                onAiCameraClick = { launchCamera(true) }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
