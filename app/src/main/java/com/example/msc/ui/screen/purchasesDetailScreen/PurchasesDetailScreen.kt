@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,8 +39,10 @@ import com.example.msc.ui.components.Buttons.ActionItem
 import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.GenericSuccessDialog
 import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.components.Text.TextoSecundario
+import com.example.msc.ui.components.Text.dosisRegular
 import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.DarkBlueMSC
 import java.text.SimpleDateFormat
@@ -91,6 +97,24 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
         DeleteConfirmationDialog(
             onDismiss = { viewModel.onDismissDeleteDialog() },
             onConfirm = { viewModel.onConfirmDelete() }
+        )
+    }
+
+    // Dialog de confirmacion de guardado
+    if (uiState.isSaveSuccessDialogVisible) {
+        GenericSuccessDialog(
+            message = "Edición confirmada",
+            title = uiState.purchase?.shop ?: "",
+            onConfirm = { viewModel.onDismissSaveSuccess() }
+        )
+    }
+
+    // Dialog de cancelacion
+    if (uiState.isCancelSuccessDialogVisible) {
+        GenericSuccessDialog(
+            message = "Edición cancelada",
+            title = uiState.purchase?.shop ?: "",
+            onConfirm = { viewModel.onDismissCancelSuccess() }
         )
     }
 
@@ -151,7 +175,9 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
                 HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp), color = DarkBlueMSC, thickness = 2.dp)
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                         .padding(top = 4.dp, bottom = 4.dp),
 
                 ) {
@@ -186,6 +212,31 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
                                 size = 18,
                                 color = Color.White
                             )
+                        }
+                    }
+                }
+
+                if (uiState.isEditMode) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = { viewModel.onCancelEditClicked() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        ) {
+                            Text("Cancelar", color = Color.White, fontFamily = dosisRegular)
+                        }
+                        Button(
+                            onClick = { viewModel.onSaveEditClicked() },
+                            colors = ButtonDefaults.buttonColors(containerColor = BlueMSC),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(1f).padding(start = 8.dp)
+                        ) {
+                            Text("Aceptar", color = Color.White, fontFamily = dosisRegular)
                         }
                     }
                 }

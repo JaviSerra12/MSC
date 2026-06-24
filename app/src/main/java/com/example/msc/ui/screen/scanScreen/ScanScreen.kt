@@ -43,6 +43,7 @@ import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
 import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.SuccessPurchaseDialog
 import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.components.Text.TextoSecundario
 import com.example.msc.ui.components.scan.DetectedProductsList
@@ -126,6 +127,16 @@ fun ScanScreen(viewModel: ScanScreenVM) {
             text = "¿Estás seguro de que quieres cancelar? Se perderán los datos escaneados.",
             onDismiss = { viewModel.onDismissCancel() },
             onConfirm = { viewModel.onConfirmCancel() }
+        )
+    }
+
+    // PopUp de confirmación de compra
+    if (uiState.isSuccessDialogVisible) {
+        val totalPrice = uiState.products.sumOf { it.price * it.quantity }
+        SuccessPurchaseDialog(
+            shopName = uiState.tempShopName,
+            totalPrice = totalPrice,
+            onConfirm = { viewModel.onDismissSuccessDialog() }
         )
     }
 

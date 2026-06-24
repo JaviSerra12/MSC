@@ -40,8 +40,13 @@ class PurchasesDetailScreenVM(
     }
 
     fun onEditClicked() {
-        // Al pulsar editar se activa el modo editar
-        _uiState.update { it.copy(isEditMode = !it.isEditMode) }
+        // Al pulsar editar se activa el modo editar y guarda el estado original
+        _uiState.update { 
+            it.copy(
+                isEditMode = true,
+                originalProducts = it.purchase?.products
+            ) 
+        }
     }
 
     fun onProductClicked(index: Int) {
@@ -77,21 +82,44 @@ class PurchasesDetailScreenVM(
     }
 
     fun onConfirmEdit(newProducts: List<Products>) {
+        // Actualizamos la lista en memoria, pero no persistimos aún
+        _uiState.update { state ->
+            state.copy(
+                purchase = state.purchase?.copy(products = newProducts),
+                isEditDialogVisible = false,
+                selectedProductIndex = null
+            )
+        }
+    }
+
+    fun onSaveEditClicked() {
         val currentPurchase = _uiState.value.purchase ?: return
-        val updatedPurchase = currentPurchase.copy(
-            products = newProducts
-        )
-        
         viewModelScope.launch {
-            updatePurchaseUseCase(updatedPurchase)
-            // Una vez guardado, salimos del modo edición y cerramos diálogo
-            _uiState.update {
+            updatePurchaseUseCase(currentPurchase)
+            _uiState.update { 
                 it.copy(
-                    isEditDialogVisible = false, 
-                    selectedProductIndex = null,
-                    isEditMode = false 
+                    isEditMode = false,
+                    isSaveSuccessDialogVisible = true 
                 ) 
             }
         }
+    }
+
+    fun onCancelEditClicked() {
+        _uiState.update { state ->
+            state.copy(
+                purchase = state.purchase?.copy(products = state.originalProducts ?: state.purchase.products),
+                isEditMode = false,
+                isCancelSuccessDialogVisible = true
+            )
+        }
+    }
+
+    fun onDismissSaveSuccess() {
+        _uiState.update { it.copy(isSaveSuccessDialogVisible = false) }
+    }
+
+    fun onDismissCancelSuccess() {
+        _uiState.update { it.copy(isCancelSuccessDialogVisible = false) }
     }
 }

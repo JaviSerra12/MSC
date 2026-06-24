@@ -35,5 +35,8 @@ data class ScanScreenUiState(
     val selectedProductIndex: Int? = null,
     val isCancelConfirmationVisible: Boolean = false,
     val isStructureDropdownVisible: Boolean = false,
-    val hasScanned: Boolean = false
+    val hasScanned: Boolean = false,
+
+    // Confirmación de compra
+    val isSuccessDialogVisible: Boolean = false
 )

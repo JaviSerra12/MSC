@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -95,7 +96,12 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
         }
     ) { padding ->
         if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
                 CircularProgressIndicator(color = BlueMSC)
             }
         } else {
@@ -123,7 +129,12 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                             )
                             if (uiState.isEditMode) {
                                 IconButton(onClick = { showEditName = true }) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Editar nombre", tint = BlueMSC, modifier = Modifier.size(20.dp))
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar nombre",
+                                        tint = BlueMSC,
+                                        modifier = Modifier.size(20.dp)
+                                    )
                                 }
                             }
                         }
@@ -134,7 +145,7 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                             color = Color.Gray
                         )
                     }
-                    
+
                     ActionsDropdown(
                         actions = listOf(
                             ActionItem(label = "Editar") { viewModel.onEditClicked() },
@@ -161,7 +172,9 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (uiState.isEditMode && member.uid != uiState.adminId) Color(0xFFFFEBEE) else Color(0xFFF5F5F5)
+                                containerColor = if (uiState.isEditMode && member.uid != uiState.adminId) Color(
+                                    0xFFFFEBEE
+                                ) else Color(0xFFF5F5F5)
                             )
                         ) {
                             Row(
@@ -170,29 +183,38 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Column {
-                                    Text(text = member.username, fontWeight = FontWeight.Bold, fontFamily = dosisRegular)
+                                    Text(
+                                        text = member.username,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = dosisRegular
+                                    )
                                     Text(text = member.email, fontSize = 12.sp, color = Color.Gray)
                                 }
                                 if (uiState.isEditMode && member.uid != uiState.adminId) {
                                     IconButton(onClick = { viewModel.removeMember(member.uid) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red)
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "Eliminar",
+                                            tint = Color.Red
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-                    
-                    if (uiState.isEditMode) {
-                        item {
-                            Button(
-                                onClick = { showInviteDialog = true },
-                                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = BlueMSC)
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Invitar Miembro", fontFamily = dosisRegular)
-                            }
+
+
+                    item {
+                        Button(
+                            onClick = { showInviteDialog = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = BlueMSC)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Invitar Miembro", fontFamily = dosisRegular)
                         }
                     }
                 }
@@ -200,12 +222,13 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
         }
     }
 
+
     if (showEditName) {
         EditFieldDialog(
             title = "Cambiar nombre del grupo",
             initialValue = uiState.name,
             onDismiss = { showEditName = false },
-            onConfirm = { 
+            onConfirm = {
                 viewModel.updateGroupName(it)
                 showEditName = false
             }
@@ -223,7 +246,11 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                         Toast.makeText(context, "Invitación enviada", Toast.LENGTH_SHORT).show()
                         showInviteDialog = false
                     } else {
-                        Toast.makeText(context, result.exceptionOrNull()?.message ?: "Error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            result.exceptionOrNull()?.message ?: "Error",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             },

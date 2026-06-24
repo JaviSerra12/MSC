@@ -136,8 +136,12 @@ class ScanScreenVM(
 
         viewModelScope.launch {
             addPurchaseUseCase(newPurchase)
-            resetState()
+            _uiState.update { it.copy(isSuccessDialogVisible = true) }
         }
+    }
+
+    fun onDismissSuccessDialog() {
+        resetState()
     }
 
     fun onCancelClicked() {

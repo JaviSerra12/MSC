@@ -1,7 +1,9 @@
 package com.example.msc.ui.components.Buttons
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DropdownMenu
@@ -16,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.theme.BlueMSC
+import com.example.msc.ui.theme.DarkBlueMSC
 
 data class ActionItem(
     val label: String,
@@ -35,8 +39,10 @@ fun ActionsDropdown(
     Box(modifier = modifier.wrapContentSize(Alignment.TopEnd)) {
         Button(
             onClick = { expanded = true },
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, color = Color.DarkGray),
             colors = ButtonColors(
-                containerColor = BlueMSC,
+                containerColor = Color.Transparent,
                 contentColor = Color.Black,
                 disabledContainerColor = BlueMSC.copy(alpha = 0.5f),
                 disabledContentColor = Color.Black
@@ -50,7 +56,8 @@ fun ActionsDropdown(
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            containerColor = BlueMSC.copy(alpha = 0.9f)
         ) {
             actions.forEach { action ->
                 DropdownMenuItem(
