@@ -20,8 +20,6 @@ class GeminiScanRepository(
     )
 
     override suspend fun processImage(uri: Uri): Result<String> {
-        // En esta implementación, processImage usará el OCR normal si se llama, 
-        // pero aquí implementaremos la lógica de Gemini para ambos por simplicidad si se usa este repo.
         return processImageWithAi(uri)
     }
 
@@ -31,7 +29,6 @@ class GeminiScanRepository(
                 val inputStream = context.contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 inputStream?.close()
-
                 if (bitmap == null) {
                     return@withContext Result.failure(Exception("No se pudo cargar la imagen"))
                 }

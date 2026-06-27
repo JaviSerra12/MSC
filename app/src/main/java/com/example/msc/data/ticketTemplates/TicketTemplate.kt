@@ -13,7 +13,7 @@ interface TicketTemplate {
     fun parseQtyNamePrice(line: String, priceRegex: Regex): Products? {
         // Busca el precio al final de la linea.
         val priceMatch = priceRegex.findAll(line).lastOrNull() ?: return null
-        // El precio es igual al ultimo numero encontrado y cambiamos la coma por un punto.
+        // El precio es igual al ultimo numero encontrado y cambia la coma por un punto.
         val totalPrice = priceMatch.value.replace(",", ".").toDoubleOrNull() ?: 0.0
         // El nombre es lo que queda sin el precio.
         val remaining = line.replace(priceMatch.value, "").trim()
@@ -22,7 +22,7 @@ interface TicketTemplate {
         val qtyMatch = """^(\d+([,.]\d{1,2})?)\s*[xX*]?""".toRegex().find(remaining)
             ?: return null // Si no empieza por un numero, este patron no aplica.
 
-        // Cambiamos la coma por un punto y obtenemos la cantidad
+        // Cambia la coma por un punto y obtiene la cantidad
         val quantity = qtyMatch.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 1.0
         // El nombre es lo que queda después de quitar cantidad y precio.
         val name = remaining.replaceFirst(qtyMatch.value, "").trim()
@@ -72,15 +72,13 @@ interface TicketTemplate {
         val totalPrice = priceMatch.value.replace(",", ".").toDoubleOrNull() ?: 0.0
         val name = line.replace(priceMatch.value, "").trim()
         
-        // Evitamos procesar lineas que son solo numeros o simbolos.
+        // Evita procesar lineas que son solo numeros o simbolos.
         if (name.all { it.isDigit() || it == ',' || it == '.' || it == ' ' }) return null
         
         return if (name.length > 2) Products(name.uppercase(), totalPrice, 1.0) else null
     }
 
-    // Valida si el texto extraido como nombre es un producto real y no "basura" del ticket.
     fun isValidProduct(name: String, blackList: List<String>): Boolean {
-        // Ignora nombres demasiado cortos.
         if (name.length < 3) return false
         val upperName = name.uppercase()
         

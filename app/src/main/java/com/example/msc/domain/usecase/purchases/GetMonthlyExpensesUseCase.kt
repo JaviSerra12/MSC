@@ -17,7 +17,7 @@ class GetMonthlyExpensesUseCase {
 
         // Devuelve el valor de los productos agrupados por mes
         return purchases
-            // Ordenamos las compras por fecha (descendente)
+            // Ordena las compras por fecha (descendente)
             .sortedByDescending { it.createdAt }
             .groupBy { formatter.format(Date(it.createdAt)) }
             .mapValues { (_, purchaseList) ->

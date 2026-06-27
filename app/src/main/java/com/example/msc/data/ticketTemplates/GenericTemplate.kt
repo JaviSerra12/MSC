@@ -29,7 +29,7 @@ class GenericTemplate : TicketTemplate {
         for (line in lines) {
             val upperLine = line.uppercase()
             
-            // Si detecta la palabra TOTAL (y no es SUBTOTAL), dejamos de leer lineas
+            // Si detecta TOTAL (y no es SUBTOTAL) dejam de leer lineas
             if (upperLine.contains("TOTAL") && !upperLine.contains("SUBTOTAL")) {
                 break
             }
