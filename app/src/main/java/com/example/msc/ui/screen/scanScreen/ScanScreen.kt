@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,14 +43,13 @@ import com.example.msc.ui.components.Buttons.ActionItem
 import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
-import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.GeneralConfirmationDialog
 import com.example.msc.ui.components.PopUpWindows.SuccessPurchaseDialog
 import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.components.Text.TextoSecundario
 import com.example.msc.ui.components.scan.DetectedProductsList
 import com.example.msc.ui.components.scan.PatternDropdown
 import com.example.msc.ui.components.scan.ScanningButtons
-import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.DarkBlueMSC
 import com.example.msc.util.FileUtils
 import java.text.SimpleDateFormat
@@ -63,21 +63,12 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
     // URI temporal para la foto de la camara
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
-    // Estado para saber si la foto capturada debe procesarse con IA
-    var isCameraAiMode by remember { mutableStateOf(false) }
 
     // Launcher para la galeria
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        uri?.let { viewModel.onImageSelected(it, useAi = false) }
-    }
-
-    // Launcher para la galeria con IA
-    val aiGalleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let { viewModel.onImageSelected(it, useAi = true) }
+        uri?.let { viewModel.onImageSelected(it, useAi = uiState.isAiEnabled) }
     }
 
     // Launcher para la camara
@@ -85,7 +76,7 @@ fun ScanScreen(viewModel: ScanScreenVM) {
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            tempImageUri?.let { viewModel.onImageSelected(it, useAi = isCameraAiMode) }
+            tempImageUri?.let { viewModel.onImageSelected(it, useAi = uiState.isAiEnabled) }
         }
     }
 
@@ -102,8 +93,7 @@ fun ScanScreen(viewModel: ScanScreenVM) {
         }
     }
 
-    val launchCamera = { useAi: Boolean ->
-        isCameraAiMode = useAi
+    val launchCamera = {
         val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
             val uri = FileUtils.createTempPictureUri(context)
@@ -143,9 +133,10 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
     // Confirma si quieres cancelar la compra
     if (uiState.isCancelConfirmationVisible) {
-        DeleteConfirmationDialog(
+        GeneralConfirmationDialog(
             title = "Cancelar Escaneo",
             text = "¿Estás seguro de que quieres cancelar? Se perderán los datos escaneados.",
+            confirmButtonText = "Cancelar",
             onDismiss = { viewModel.onDismissCancel() },
             onConfirm = { viewModel.onConfirmCancel() }
         )
@@ -180,33 +171,33 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 TextoSecundario(
                     texto = dateFormat.format(Date()),
                     size = 12,
                     color = Color.Black,
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(top = 10.dp)
                 )
-                TextoSecundario(texto = "Nueva Compra", size = 32, color = Color.Black)
-
-                ActionsDropdown(
-                    actions = emptyList(),
-                    modifier = Modifier.padding(top = 10.dp)
+                TextoSecundario(
+                    texto = "Nueva Compra",
+                    size = 32,
+                    color = Color.Black
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             ScanningButtons(
+                isAiEnabled = uiState.isAiEnabled,
+                onAiEnabledChange = { viewModel.onAiToggleChanged(it) },
                 onGalleryClick = { galleryLauncher.launch("image/*") },
-                onCameraClick = { launchCamera(false) },
-                onAiGalleryClick = { aiGalleryLauncher.launch("image/*") },
-                onAiCameraClick = { launchCamera(true) }
+                onCameraClick = { launchCamera() }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -293,16 +284,17 @@ fun ScanScreen(viewModel: ScanScreenVM) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
                 TextoSecundario(
                     texto = dateStr,
                     size = 12,
                     color = Color.Black,
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(top = 10.dp)
                 )
                 TextoSecundario(
                     texto = uiState.tempShopName,
@@ -319,7 +311,9 @@ fun ScanScreen(viewModel: ScanScreenVM) {
                             viewModel.onShowStructureDropdown()
                         }
                     ),
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(top = 10.dp)
                 )
             }
 

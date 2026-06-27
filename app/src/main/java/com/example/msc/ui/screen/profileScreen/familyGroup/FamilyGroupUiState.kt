@@ -11,5 +11,6 @@ data class FamilyGroupUiState(
     val error: String? = null,
     val isGroupDeleted: Boolean = false,
     val isEditMode: Boolean = false,
-    val isDeleteDialogVisible: Boolean = false
+    val isDeleteDialogVisible: Boolean = false,
+    val isLeaveDialogVisible: Boolean = false
 )

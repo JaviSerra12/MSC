@@ -42,13 +42,16 @@ class ScanScreenVM(
         }
     }
 
+    fun onAiToggleChanged(enabled: Boolean) {
+        _uiState.update { it.copy(isAiEnabled = enabled) }
+    }
+
     fun onImageSelected(uri: Uri, useAi: Boolean = false) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, products = emptyList(), errorMessage = null, hasScanned = false) }
             val result = scanPurchaseUseCase(uri, useAi)
 
             result.onSuccess { text ->
-                // Si usamos IA, forzamos el patrón QTY_NAME_PRICE que es el que pedimos en el prompt
                 val pattern = if (useAi) ParsingPattern.QTY_NAME_PRICE else _uiState.value.selectedPattern
                 processScannedText(text, pattern)
             }.onFailure { error ->

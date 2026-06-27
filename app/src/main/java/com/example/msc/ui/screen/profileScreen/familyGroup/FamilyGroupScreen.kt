@@ -31,7 +31,7 @@ import com.example.msc.domain.usecase.auth.GetUsernameUseCase
 import com.example.msc.domain.usecase.family.*
 import com.example.msc.ui.components.Buttons.ActionItem
 import com.example.msc.ui.components.Buttons.ActionsDropdown
-import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.GeneralConfirmationDialog
 import com.example.msc.ui.components.PopUpWindows.EditFieldDialog
 import com.example.msc.ui.components.Text.dosisRegular
 import com.example.msc.ui.theme.BlueMSC
@@ -63,6 +63,8 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
     var showEditName by remember { mutableStateOf(false) }
     var showInviteDialog by remember { mutableStateOf(false) }
 
+    val isAdmin = uiState.adminId == viewModel.currentUserId
+
     LaunchedEffect(uiState.isGroupDeleted) {
         if (uiState.isGroupDeleted) {
             navController.popBackStack()
@@ -70,11 +72,22 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
     }
 
     if (uiState.isDeleteDialogVisible) {
-        DeleteConfirmationDialog(
+        GeneralConfirmationDialog(
             title = "¿Eliminar grupo?",
             text = "¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.",
             onDismiss = { viewModel.onDismissDeleteDialog() },
             onConfirm = { viewModel.onConfirmDelete() }
+        )
+    }
+
+    if (uiState.isLeaveDialogVisible) {
+        GeneralConfirmationDialog(
+            title = "¿Abandonar grupo?",
+            text = "¿Estás seguro de que quieres abandonar este grupo?",
+            confirmButtonText = "Abandonar",
+            confirmButtonColor = BlueMSC,
+            onDismiss = { viewModel.onDismissLeaveDialog() },
+            onConfirm = { viewModel.onConfirmLeave() }
         )
     }
 
@@ -147,10 +160,16 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                     }
 
                     ActionsDropdown(
-                        actions = listOf(
-                            ActionItem(label = "Editar") { viewModel.onEditClicked() },
-                            ActionItem(label = "Borrar") { viewModel.onDeleteClicked() }
-                        )
+                        actions = if (isAdmin) {
+                            listOf(
+                                ActionItem(label = "Editar") { viewModel.onEditClicked() },
+                                ActionItem(label = "Borrar") { viewModel.onDeleteClicked() }
+                            )
+                        } else {
+                            listOf(
+                                ActionItem(label = "Abandonar") { viewModel.onLeaveClicked() }
+                            )
+                        }
                     )
                 }
 
@@ -202,7 +221,6 @@ fun FamilyGroupScreen(navController: NavHostController, familyGroupId: String) {
                             }
                         }
                     }
-
 
                     item {
                         Button(

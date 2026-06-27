@@ -42,7 +42,7 @@ import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.Buttons.AddPurchaseButton
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
 import com.example.msc.ui.components.PopUpWindows.AddShopDialog
-import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.GeneralConfirmationDialog
 import com.example.msc.ui.components.Cards.CardPurchasesHome
 import com.example.msc.ui.components.login.ShowUser
 import com.example.msc.ui.navigation.RouteGeneral
@@ -115,7 +115,10 @@ fun HomeScreen(navController: NavHostController, month: String = "") {
 
     // Dialog de confirmación para borrar
     if (uiState.isDeleteConfirmationDialogVisible) {
-        DeleteConfirmationDialog(
+        GeneralConfirmationDialog(
+            title = "¿Eliminar compra?",
+            text = "¿Estás seguro de que quieres eliminar esta compra?",
+            confirmButtonText = "Eliminar",
             onDismiss = { viewModel.onDismissDeleteConfirmationDialog() },
             onConfirm = { viewModel.onConfirmDeletePurchase() }
         )

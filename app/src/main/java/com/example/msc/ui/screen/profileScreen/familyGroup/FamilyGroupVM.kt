@@ -74,6 +74,19 @@ class FamilyGroupVM(
         _uiState.update { it.copy(isDeleteDialogVisible = false) }
     }
 
+    fun onLeaveClicked() {
+        _uiState.update { it.copy(isLeaveDialogVisible = true) }
+    }
+
+    fun onDismissLeaveDialog() {
+        _uiState.update { it.copy(isLeaveDialogVisible = false) }
+    }
+
+    fun onConfirmLeave() {
+        leaveGroup()
+        _uiState.update { it.copy(isLeaveDialogVisible = false) }
+    }
+
     fun updateGroupName(newName: String) {
         viewModelScope.launch {
             updateGroupNameUseCase(familyGroupId, newName)
@@ -96,6 +109,15 @@ class FamilyGroupVM(
     private fun deleteGroup() {
         viewModelScope.launch {
             val result = deleteFamilyGroupUseCase(familyGroupId)
+            if (result.isSuccess) {
+                _uiState.update { it.copy(isGroupDeleted = true) }
+            }
+        }
+    }
+
+    private fun leaveGroup() {
+        viewModelScope.launch {
+            val result = removeFamilyMemberUseCase(familyGroupId, currentUserId)
             if (result.isSuccess) {
                 _uiState.update { it.copy(isGroupDeleted = true) }
             }

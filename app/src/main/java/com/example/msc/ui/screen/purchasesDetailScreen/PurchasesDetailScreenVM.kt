@@ -82,7 +82,7 @@ class PurchasesDetailScreenVM(
     }
 
     fun onConfirmEdit(newProducts: List<Products>) {
-        // Actualizamos la lista en memoria, pero no persistimos aún
+        // Actualiza la lista en memoria pero no lo guarda aun
         _uiState.update { state ->
             state.copy(
                 purchase = state.purchase?.copy(products = newProducts),

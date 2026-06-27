@@ -37,6 +37,9 @@ data class ScanScreenUiState(
     val isStructureDropdownVisible: Boolean = false,
     val hasScanned: Boolean = false,
 
+    // IA para el escaneo
+    val isAiEnabled: Boolean = false,
+
     // Confirmación de compra
     val isSuccessDialogVisible: Boolean = false
 )

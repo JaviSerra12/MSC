@@ -38,7 +38,7 @@ import com.example.msc.domain.usecase.purchases.UpdatePurchaseUseCase
 import com.example.msc.ui.components.Buttons.ActionItem
 import com.example.msc.ui.components.Buttons.ActionsDropdown
 import com.example.msc.ui.components.PopUpWindows.AddProductDialog
-import com.example.msc.ui.components.PopUpWindows.DeleteConfirmationDialog
+import com.example.msc.ui.components.PopUpWindows.GeneralConfirmationDialog
 import com.example.msc.ui.components.PopUpWindows.GenericSuccessDialog
 import com.example.msc.ui.components.Text.TextoPrincipal
 import com.example.msc.ui.components.Text.TextoSecundario
@@ -94,7 +94,10 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
 
     // Dialog de confirmación de borrado
     if (uiState.isDeleteDialogVisible) {
-        DeleteConfirmationDialog(
+        GeneralConfirmationDialog(
+            title = "¿Eliminar compra?",
+            text = "¿Estás seguro de que quieres eliminar esta compra? Esta acción no se puede deshacer.",
+            confirmButtonText = "Eliminar",
             onDismiss = { viewModel.onDismissDeleteDialog() },
             onConfirm = { viewModel.onConfirmDelete() }
         )
@@ -224,7 +227,7 @@ fun PurchasesDetailScreen(navController: NavHostController, purchaseId: String) 
                     ) {
                         Button(
                             onClick = { viewModel.onCancelEditClicked() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)
                         ) {
