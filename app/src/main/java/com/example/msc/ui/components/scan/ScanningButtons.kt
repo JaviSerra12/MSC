@@ -14,14 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.msc.ui.components.Buttons.AISwitch
 import com.example.msc.ui.theme.BlueMSC
 
 @Composable
 fun ScanningButtons(
+    isAiEnabled: Boolean,
+    onAiEnabledChange: (Boolean) -> Unit,
     onGalleryClick: () -> Unit,
     onCameraClick: () -> Unit,
-    onAiGalleryClick: () -> Unit,
-    onAiCameraClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -33,40 +34,32 @@ fun ScanningButtons(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(onClick = onGalleryClick) {
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = BlueMSC,
+                    contentColor = Color.White
+                ),
+                onClick = onGalleryClick,
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = "Cargar Ticket")
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = onCameraClick) {
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = BlueMSC,
+                    contentColor = Color.White
+                ),
+                onClick = onCameraClick,
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = "Usar Cámara")
             }
         }
         
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = onAiGalleryClick,
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BlueMSC,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Cargar IA")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = onAiCameraClick,
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BlueMSC,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Cámara IA")
-            }
-        }
+        AISwitch(
+            checked = isAiEnabled,
+            onCheckedChange = onAiEnabledChange
+        )
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.msc.ui.components.Text.dosisRegular
 import com.example.msc.ui.theme.BlueMSC
 import com.example.msc.ui.theme.BlueMSCborder
+import com.example.msc.ui.theme.DarkBlueMSC
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -70,21 +72,41 @@ fun AddShopDialog(
 
     if (showDatePicker) {
         DatePickerDialog(
+            colors = DatePickerDefaults.colors(
+                containerColor = DarkBlueMSC,
+            ),
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-
-                // false para que desaparezca el diálogo al pulsar en el botón
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Confirmar")
+                    Text("Confirmar", color = Color.White)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = Color.Red)
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = DarkBlueMSC,
+                    titleContentColor = Color.White,
+                    headlineContentColor = Color.White,
+                    weekdayContentColor = BlueMSC,
+                    subheadContentColor = Color.White,
+                    navigationContentColor = Color.White,
+                    yearContentColor = Color.White.copy(alpha = 0.6f),
+                    currentYearContentColor = Color.White,
+                    selectedYearContentColor = DarkBlueMSC,
+                    selectedYearContainerColor = Color.White,
+                    dayContentColor = Color.White,
+                    selectedDayContainerColor = Color.White,
+                    selectedDayContentColor = Color.White,
+                    todayContentColor = Color.White,
+                    todayDateBorderColor = Color.White
+                )
+            )
         }
     }
 
@@ -110,7 +132,7 @@ fun AddShopDialog(
                     fontFamily = dosisRegular,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = BlueMSCborder
+                    color = BlueMSC
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
